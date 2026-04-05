@@ -39,7 +39,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.5s ease;
         }
         .login-card {
             background: white;
@@ -60,11 +59,6 @@
             margin-bottom: 10px;
             font-size: 1.8rem;
         }
-        .login-card h2 i { margin-left: 10px; }
-        .login-card p {
-            color: #666;
-            margin-bottom: 30px;
-        }
         .login-input {
             width: 100%;
             padding: 12px 15px;
@@ -72,7 +66,6 @@
             border: 2px solid #eee;
             border-radius: 25px;
             font-size: 1rem;
-            transition: 0.3s;
         }
         .login-input:focus {
             outline: none;
@@ -89,11 +82,9 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
-            transition: 0.3s;
         }
         .login-btn:hover {
             background: var(--primary-light);
-            transform: scale(1.02);
         }
         .login-error {
             color: var(--danger);
@@ -108,16 +99,52 @@
             border-top: 1px solid #eee;
             padding-top: 15px;
         }
-        .login-info div {
-            margin: 5px 0;
+        
+        /* نافذة تأكيد المدير */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
         }
         
         /* الواجهة الرئيسية */
         .main-app {
             display: none;
         }
-        
-        /* باقي التنسيقات */
         .top-bar {
             background: var(--primary);
             color: white;
@@ -126,7 +153,6 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .logo h2 { font-size: 1.6rem; }
         .user-panel {
@@ -166,7 +192,7 @@
             font-weight: bold;
         }
         .sidebar button i { margin-left: 12px; }
-        .sidebar button.active, .sidebar button:hover {
+        .sidebar button:hover {
             background: var(--primary);
             color: white;
         }
@@ -200,46 +226,6 @@
             border: none;
             cursor: pointer;
         }
-        .table-wrapper {
-            overflow-x: auto;
-            margin-top: 15px;
-            border-radius: 12px;
-            border: 1px solid #e0e0e0;
-        }
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            min-width: 600px;
-        }
-        th, td {
-            padding: 12px 8px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
-        th {
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-        }
-        tbody tr:hover {
-            background: #f5f5f5;
-            transform: scale(1.01);
-            transition: all 0.2s ease;
-        }
-        .quantity-high { color: var(--success); font-weight: bold; }
-        .quantity-medium { color: var(--warning); font-weight: bold; }
-        .quantity-low { color: var(--danger); font-weight: bold; animation: pulse 1s infinite; }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-        .barcode-container { display: flex; justify-content: center; align-items: center; }
-        .barcode-container canvas { max-width: 120px; height: auto; }
-        .action-buttons { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
         .btn-small {
             background: var(--primary);
             color: white;
@@ -249,31 +235,34 @@
             cursor: pointer;
             margin: 2px;
             font-size: 0.8rem;
-            transition: 0.2s;
         }
-        .btn-small:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .btn-danger { background: var(--danger); }
         .btn-success { background: var(--success); }
-        .alert-low {
-            background: #fdecea;
-            color: #c0392b;
-            padding: 8px;
-            border-radius: 12px;
-            margin: 10px 0;
+        
+        /* جدول المستخدمين */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .users-table th, .users-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .users-table th {
+            background: var(--primary);
+            color: white;
+        }
+        .users-table tr:hover {
+            background: #f5f5f5;
         }
         
         @media (max-width: 768px) {
             .dashboard { flex-direction: column; }
             .sidebar { display: flex; flex-wrap: wrap; gap: 8px; }
             .sidebar button { width: auto; flex: 1; font-size: 0.8rem; padding: 8px; }
-            .content-area { padding: 12px; }
-            th, td { padding: 8px 4px; font-size: 0.75rem; }
-            .btn-small { padding: 4px 8px; font-size: 0.7rem; }
-            .barcode-container canvas { max-width: 80px; }
+            .users-table th, .users-table td { padding: 8px; font-size: 0.75rem; }
         }
-        .table-wrapper::-webkit-scrollbar { height: 8px; }
-        .table-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        .table-wrapper::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -283,15 +272,28 @@
     <div class="login-card">
         <h2><i class="fas fa-store"></i> Hana Store</h2>
         <p>نظام المحاسبة المتكامل</p>
-        <input type="text" id="loginUsername" class="login-input" placeholder="اسم المستخدم" autocomplete="off">
+        <input type="text" id="loginUsername" class="login-input" placeholder="اسم المستخدم">
         <input type="password" id="loginPassword" class="login-input" placeholder="كلمة المرور">
         <button class="login-btn" id="doLoginBtn"><i class="fas fa-sign-in-alt"></i> دخول</button>
         <div id="loginError" class="login-error"></div>
         <div class="login-info">
-            <i class="fas fa-info-circle"></i> بيانات الدخول التجريبية:
-            <div>📌 admin / admin123 (مدير كامل الصلاحيات)</div>
-            <div>📌 cashier / 123456 (كاشير)</div>
-            <div>📌 store / 123456 (مخزن)</div>
+            <i class="fas fa-info-circle"></i> بيانات الدخول:
+            <div>📌 admin / admin123 (مدير)</div>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة تأكيد المدير -->
+<div id="adminConfirmModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-shield-alt"></i> تأكيد المدير</h3>
+        <p>هذا الإجراء يتطلب صلاحيات المدير</p>
+        <input type="text" id="confirmAdminUser" placeholder="اسم المستخدم">
+        <input type="password" id="confirmAdminPass" placeholder="كلمة المرور">
+        <div id="confirmError" style="color:red; font-size:0.8rem;"></div>
+        <div class="modal-buttons">
+            <button id="confirmYesBtn" class="btn-success">تأكيد</button>
+            <button id="confirmNoBtn" class="btn-danger">إلغاء</button>
         </div>
     </div>
 </div>
@@ -301,7 +303,7 @@
     <div class="top-bar">
         <div class="logo"><h2><i class="fas fa-store"></i> Hana Store</h2></div>
         <div class="user-panel">
-            <span id="currentUserDisplay">المستخدم: </span>
+            <span id="currentUserDisplay"></span>
             <button id="logoutBtn" class="btn-small" style="background:#c0392b;"><i class="fas fa-sign-out-alt"></i> خروج</button>
         </div>
     </div>
@@ -327,42 +329,66 @@
     let users = [];
     let currentUser = null;
     let userActivityLog = JSON.parse(localStorage.getItem('hana_logs')) || [];
+    let pendingAction = null; // لتخزين الإجراء المعلق
 
+    // الأقسام
     const sections = [
         { id: 'products', name: '📦 المنتجات', roles: ['مدير', 'كاشير', 'مخزن'] },
         { id: 'sales', name: '🧾 المبيعات', roles: ['مدير', 'كاشير'] },
-        { id: 'purchases', name: '🛒 المشتريات', roles: ['مدير'] },
-        { id: 'installments', name: '📅 التقسيط', roles: ['مدير', 'كاشير'] },
-        { id: 'expenses', name: '💸 المصروفات', roles: ['مدير'] },
-        { id: 'returns', name: '🔄 المرتجع', roles: ['مدير', 'كاشير'] },
-        { id: 'damages', name: '⚠️ التالف', roles: ['مدير', 'مخزن'] },
-        { id: 'profits', name: '📊 تقارير الأرباح', roles: ['مدير'] },
-        { id: 'inventory', name: '📦 إدارة المخزون', roles: ['مدير', 'مخزن'] },
-        { id: 'backup', name: '💾 نسخ احتياطي', roles: ['مدير'] },
+        { id: 'inventory', name: '📦 المخزون', roles: ['مدير', 'مخزن'] },
         { id: 'users', name: '👥 المستخدمين', roles: ['مدير'] },
+        { id: 'profits', name: '📊 الأرباح', roles: ['مدير'] },
+        { id: 'backup', name: '💾 نسخ احتياطي', roles: ['مدير'] },
         { id: 'logs', name: '📋 سجل النشاط', roles: ['مدير'] }
     ];
 
-    // تهيئة المستخدمين الافتراضيين
+    // تهيئة المستخدمين
     function initializeUsers() {
         const defaultUsers = [
-            { username: "admin", password: "admin123", role: "مدير" },
-            { username: "cashier", password: "123456", role: "كاشير" },
-            { username: "store", password: "123456", role: "مخزن" }
+            { username: "admin", password: "admin123", role: "مدير" }
         ];
-        
         const storedUsers = localStorage.getItem('hana_users');
         if (!storedUsers) {
             localStorage.setItem('hana_users', JSON.stringify(defaultUsers));
             users = defaultUsers;
         } else {
             users = JSON.parse(storedUsers);
-            // التأكد من وجود المستخدم admin
             const hasAdmin = users.some(u => u.username === "admin");
             if (!hasAdmin) {
                 users.push({ username: "admin", password: "admin123", role: "مدير" });
                 localStorage.setItem('hana_users', JSON.stringify(users));
             }
+        }
+    }
+
+    // التحقق من صلاحيات المدير
+    function verifyAdmin(callback) {
+        if (currentUser.role === "مدير") {
+            callback(true);
+        } else {
+            pendingAction = callback;
+            document.getElementById('adminConfirmModal').style.display = 'flex';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('adminConfirmModal').style.display = 'none';
+        document.getElementById('confirmAdminUser').value = '';
+        document.getElementById('confirmAdminPass').value = '';
+        document.getElementById('confirmError').innerText = '';
+        pendingAction = null;
+    }
+
+    function checkAdminCredentials() {
+        const username = document.getElementById('confirmAdminUser').value;
+        const password = document.getElementById('confirmAdminPass').value;
+        const adminUser = users.find(u => u.role === "مدير" && u.username === username && u.password === password);
+        
+        if (adminUser) {
+            closeModal();
+            if (pendingAction) pendingAction(true);
+        } else {
+            document.getElementById('confirmError').innerText = '❌ بيانات المدير غير صحيحة';
         }
     }
 
@@ -383,6 +409,7 @@
         localStorage.setItem('hana_damages', JSON.stringify(damages));
         localStorage.setItem('hana_suppliers', JSON.stringify(suppliers));
         localStorage.setItem('hana_users', JSON.stringify(users));
+        localStorage.setItem('hana_logs', JSON.stringify(userActivityLog));
     }
 
     function generateProductCode() { return 'PRD-' + Date.now() + '-' + Math.floor(Math.random() * 1000); }
@@ -427,7 +454,7 @@
     }
 
     function getIcon(id) {
-        const icons = { products: 'fa-box', sales: 'fa-cart-shopping', purchases: 'fa-truck', installments: 'fa-calendar-alt', expenses: 'fa-money-bill-wave', returns: 'fa-undo', damages: 'fa-exclamation-triangle', profits: 'fa-chart-line', inventory: 'fa-warehouse', backup: 'fa-database', users: 'fa-users', logs: 'fa-history' };
+        const icons = { products: 'fa-box', sales: 'fa-cart-shopping', inventory: 'fa-warehouse', users: 'fa-users', profits: 'fa-chart-line', backup: 'fa-database', logs: 'fa-history' };
         return icons[id] || 'fa-folder';
     }
 
@@ -436,9 +463,10 @@
         if (sectionId === 'products') renderProducts();
         else if (sectionId === 'sales') renderSales();
         else if (sectionId === 'inventory') renderInventory();
-        else {
-            document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>${sections.find(s=>s.id===sectionId)?.name}</h3><p>جاري التطوير...</p></div>`;
-        }
+        else if (sectionId === 'users') renderUserManagement();
+        else if (sectionId === 'profits') renderProfits();
+        else if (sectionId === 'backup') renderBackup();
+        else if (sectionId === 'logs') renderLogs();
         logActivity(`فتح قسم ${sectionId}`);
     }
 
@@ -455,32 +483,25 @@
             <div class="form-group"><label>سعر الشراء</label><input type="number" id="buyPrice" required></div>
             <div class="form-group"><label>سعر البيع</label><input type="number" id="sellPrice" required></div>
             <div class="form-group"><label>الكمية الأولية</label><input type="number" id="quantity" value="0"></div>
-            <button type="submit" class="submit-btn">إضافة منتج + كود تلقائي</button></form></div>
+            <button type="submit" class="submit-btn">إضافة منتج</button></form></div>
             <div class="card"><h3>قائمة المنتجات</h3>
             <div class="table-wrapper">
-            <table>
-                <thead><tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>باركود</th><th>إجراءات</th></thead>
+            <table class="users-table">
+                <thead><tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>إجراءات</th></tr></thead>
                 <tbody id="productsTableBody"></tbody>
-             </table>
+            </table>
             </div></div>`;
         document.getElementById('dynamicView').innerHTML = html;
         
         const tbody = document.getElementById('productsTableBody');
         tbody.innerHTML = '';
         products.forEach(p => {
-            let quantityClass = getQuantityClass(p.quantity);
             let row = tbody.insertRow();
             row.innerHTML = `
-                <td>${p.code}</td>
-                <td>${p.name}</td>
-                <td>${p.buyPrice} ج.م</td>
-                <td>${p.sellPrice} ج.م</td>
-                <td class="${quantityClass}">${p.quantity}</td>
-                <td class="barcode-container"><canvas id="barcode-${p.code}" style="max-width:100px"></canvas></td>
-                <td class="action-buttons">
-                    <button class="btn-small" onclick="editProduct('${p.code}')"><i class="fas fa-edit"></i> تعديل</button>
-                    <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')"><i class="fas fa-trash"></i> حذف</button>
-                </td>
+                <td>${p.code}</td><td>${p.name}</td><td>${p.buyPrice} ج.م</td><td>${p.sellPrice} ج.م</td>
+                <td>${p.quantity}</td>
+                <td><button class="btn-small" onclick="editProduct('${p.code}')">تعديل</button>
+                <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')">حذف</button></td>
             `;
         });
         
@@ -497,12 +518,7 @@
             saveAllData();
             renderProducts();
             logActivity(`إضافة منتج: ${newProduct.name}`);
-        });
-        
-        products.forEach(p => {
-            try {
-                JsBarcode(`#barcode-${p.code}`, p.code, { format: "CODE128", lineColor: "#0a3d62", width: 1.5, height: 30, displayValue: true });
-            } catch(e) { console.log("Barcode error"); }
+            alert("تم إضافة المنتج بنجاح");
         });
     }
     
@@ -531,7 +547,7 @@
         let cart = [];
         function updateTotal() { let total = cart.reduce((sum, i) => sum + (i.price * i.qty),0) - (parseFloat(document.getElementById('discountSale')?.value)||0); document.getElementById('totalPreview').innerText = total; }
         document.getElementById('addProductToSaleBtn').onclick = () => {
-            if(products.length === 0) { alert("لا توجد منتجات! أضف منتجات أولاً"); return; }
+            if(products.length === 0) { alert("لا توجد منتجات!"); return; }
             let productSelect = `<select id="tempProductSelect">${products.map(p => `<option value="${p.code}">${p.name} - ${p.sellPrice} ج.م (متوفر:${p.quantity})</option>`).join('')}</select>
             <input type="number" id="tempQty" placeholder="الكمية" min="1"><button id="confirmAdd" class="btn-small">إضافة</button>`;
             let div = document.createElement('div'); div.innerHTML = productSelect; div.style.margin = "10px 0";
@@ -567,78 +583,174 @@
             logActivity(`بيع بقيمة ${total}`);
             alert(`تمت عملية البيع بنجاح بقيمة ${total} ج.م`);
         };
-        let historyHtml = `<table> hilab<th>التاريخ</th><th>الإجمالي</th> </tr>${sales.map(s => `<tr><td>${s.date}</td><td>${s.total} ج.م</td></tr>`).join('')} </table>`;
+        let historyHtml = `<table class="users-table"><tr><th>التاريخ</th><th>الإجمالي</th></tr>${sales.map(s => `<tr><td>${s.date}</td><td>${s.total} ج.م</td></tr>`).join('')}</table>`;
         document.getElementById('salesHistory').innerHTML = historyHtml;
     }
 
     function renderInventory() {
         let lowStock = checkLowStock();
-        let alertHtml = lowStock.length ? `<div class="alert-low">⚠️ تنبيه: المنتجات التالية قليلة المخزون: ${lowStock.map(p=>p.name).join(', ')}</div>` : '';
-        let table = `<table><tr><th>المنتج</th><th>الكمية</th><th>سعر البيع</th></tr>${products.map(p=>`<tr><td>${p.name}</td><td class="${getQuantityClass(p.quantity)}">${p.quantity}</td><td>${p.sellPrice} ج.م</td></tr>`).join('')}</table>`;
-        document.getElementById('dynamicView').innerHTML = `<div class="card">${alertHtml}<h3>متابعة المخزون</h3>${table}</div>`;
+        let alertHtml = lowStock.length ? `<div class="alert-low">⚠️ تنبيه: نقص مخزون في: ${lowStock.map(p=>p.name).join(', ')}</div>` : '';
+        let table = `<table class="users-table"><tr><th>المنتج</th><th>الكمية</th><th>سعر البيع</th></tr>${products.map(p=>`<tr><td>${p.name}</td><td>${p.quantity}</td><td>${p.sellPrice} ج.م</td></tr>`).join('')}</table>`;
+        document.getElementById('dynamicView').innerHTML = `<div class="card">${alertHtml}<h3>المخزون الحالي</h3>${table}</div>`;
     }
 
-    // ------------------------- وظائف تسجيل الدخول -------------------------
-    function showLoginScreen() {
-        document.getElementById('loginOverlay').style.display = 'flex';
-        document.getElementById('mainApp').style.display = 'none';
+    function renderProfits() {
+        let totalSales = sales.reduce((s,i)=>s+i.total,0);
+        let totalExpenses = expenses.reduce((s,i)=>s+i.amount,0);
+        let totalPurchaseCost = products.reduce((s,p)=>s+(p.buyPrice*p.quantity),0);
+        let netProfit = totalSales - totalExpenses - totalPurchaseCost;
+        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>تقرير الأرباح</h3>
+        <p>إجمالي المبيعات: ${totalSales} ج.م</p>
+        <p>إجمالي المصروفات: ${totalExpenses} ج.م</p>
+        <p>تكلفة المخزون: ${totalPurchaseCost} ج.م</p>
+        <h2 style="color:var(--success)">صافي الربح: ${netProfit} ج.م</h2></div>`;
     }
-    
-    function hideLoginScreen() {
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
+
+    function renderBackup() {
+        document.getElementById('dynamicView').innerHTML = `<div class="card">
+            <button class="submit-btn" id="exportBackup">📥 تصدير نسخة احتياطية</button>
+            <input type="file" id="importFile" accept=".json" style="margin-top:10px">
+            <button id="importBackupBtn" class="btn-small">📤 استيراد واسترجاع</button>
+        </div>`;
+        document.getElementById('exportBackup').onclick = () => {
+            let data = { products, sales, purchases, expenses, installments, returns, damages, suppliers, users, userActivityLog };
+            let blob = new Blob([JSON.stringify(data)], {type:"application/json"});
+            let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "hana_backup.json"; a.click();
+            alert("تم تصدير النسخة الاحتياطية");
+        };
+        document.getElementById('importBackupBtn').onclick = () => {
+            let file = document.getElementById('importFile').files[0];
+            if(!file) return;
+            let reader = new FileReader();
+            reader.onload = (e) => { let data = JSON.parse(e.target.result); 
+                Object.assign(products, data.products); Object.assign(sales, data.sales); 
+                Object.assign(users, data.users); saveAllData(); alert("تم الاسترجاع"); location.reload(); };
+            reader.readAsText(file);
+        };
     }
-    
-    function doLogin() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const errorDiv = document.getElementById('loginError');
+
+    function renderLogs() {
+        let logsHtml = userActivityLog.map(l=>`<div style="border-bottom:1px solid #eee; padding:5px">[${l.time}] ${l.user}: ${l.action}</div>`).join('');
+        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>سجل النشاطات</h3>${logsHtml || "لا توجد نشاطات"}</div>`;
+    }
+
+    // ------------------------- إدارة المستخدمين (المطلوبة) -------------------------
+    function renderUserManagement() {
+        let html = `
+            <div class="card">
+                <h3><i class="fas fa-users"></i> إدارة المستخدمين</h3>
+                <p style="color:#666; margin-bottom:15px">🔒 فقط المدير يمكنه تعديل بيانات المستخدمين</p>
+                <table class="users-table">
+                    <thead>
+                        <tr><th>اسم المستخدم</th><th>الصلاحية</th><th>الإجراءات</th></tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-user-plus"></i> إضافة مستخدم جديد</h3>
+                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="newUsername" placeholder="أدخل اسم المستخدم"></div>
+                <div class="form-group"><label>كلمة المرور</label><input type="password" id="newPassword" placeholder="أدخل كلمة المرور"></div>
+                <div class="form-group"><label>الصلاحية</label>
+                    <select id="newRole">
+                        <option value="كاشير">كاشير</option>
+                        <option value="مخزن">مخزن</option>
+                        <option value="مدير">مدير</option>
+                    </select>
+                </div>
+                <button id="addNewUserBtn" class="submit-btn"><i class="fas fa-plus"></i> إضافة مستخدم</button>
+            </div>
+        `;
+        document.getElementById('dynamicView').innerHTML = html;
         
-        if (!username || !password) {
-            errorDiv.innerText = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+        // عرض المستخدمين
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        users.forEach((user, index) => {
+            let row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${user.username}</td>
+                <td>${user.role}</td>
+                <td>
+                    <button class="btn-small" onclick="editUser('${user.username}')"><i class="fas fa-edit"></i> تعديل</button>
+                    ${user.username !== 'admin' ? `<button class="btn-small btn-danger" onclick="deleteUser('${user.username}')"><i class="fas fa-trash"></i> حذف</button>` : '<span style="color:#999">لا يمكن حذف المدير</span>'}
+                </td>
+            `;
+        });
+        
+        // إضافة مستخدم جديد
+        document.getElementById('addNewUserBtn').onclick = () => {
+            verifyAdmin((isAdmin) => {
+                if (isAdmin) {
+                    const username = document.getElementById('newUsername').value.trim();
+                    const password = document.getElementById('newPassword').value;
+                    const role = document.getElementById('newRole').value;
+                    
+                    if (!username || !password) {
+                        alert("الرجاء إدخال اسم المستخدم وكلمة المرور");
+                        return;
+                    }
+                    
+                    if (users.find(u => u.username === username)) {
+                        alert("اسم المستخدم موجود بالفعل!");
+                        return;
+                    }
+                    
+                    users.push({ username, password, role });
+                    saveAllData();
+                    renderUserManagement();
+                    logActivity(`إضافة مستخدم جديد: ${username} (${role})`);
+                    alert(`✅ تم إضافة المستخدم ${username} بنجاح`);
+                    document.getElementById('newUsername').value = '';
+                    document.getElementById('newPassword').value = '';
+                }
+            });
+        };
+    }
+    
+    // تعديل المستخدم
+    window.editUser = (username) => {
+        verifyAdmin((isAdmin) => {
+            if (isAdmin) {
+                const user = users.find(u => u.username === username);
+                if (!user) return;
+                
+                const newUsername = prompt("اسم المستخدم الجديد:", user.username);
+                if (newUsername && newUsername !== user.username) {
+                    if (users.find(u => u.username === newUsername)) {
+                        alert("اسم المستخدم موجود بالفعل!");
+                        return;
+                    }
+                    user.username = newUsername;
+                }
+                
+                const newPassword = prompt("كلمة المرور الجديدة (اترك فارغاً إذا لا تريد التغيير):", "");
+                if (newPassword && newPassword.trim() !== "") {
+                    user.password = newPassword;
+                }
+                
+                const newRole = prompt("الصلاحية الجديدة (مدير / كاشير / مخزن):", user.role);
+                if (newRole && ["مدير", "كاشير", "مخزن"].includes(newRole)) {
+                    user.role = newRole;
+                }
+                
+                saveAllData();
+                renderUserManagement();
+                logActivity(`تعديل بيانات المستخدم: ${username}`);
+                alert(`✅ تم تعديل بيانات المستخدم بنجاح`);
+            }
+        });
+    };
+    
+    // حذف مستخدم
+    window.deleteUser = (username) => {
+        if (username === 'admin') {
+            alert("لا يمكن حذف المستخدم المدير الرئيسي!");
             return;
         }
         
-        // البحث عن المستخدم
-        const user = users.find(u => u.username === username && u.password === password);
-        
-        if (user) {
-            currentUser = { username: user.username, role: user.role };
-            document.getElementById('currentUserDisplay').innerText = `المستخدم: ${currentUser.username} (${currentUser.role})`;
-            hideLoginScreen();
-            renderSidebar();
-            loadSection('products');
-            logActivity(`تسجيل دخول: ${username}`);
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            errorDiv.innerText = '';
-        } else {
-            errorDiv.innerText = '❌ اسم المستخدم أو كلمة المرور غير صحيحة';
-        }
-    }
-    
-    function logout() {
-        currentUser = null;
-        showLoginScreen();
-    }
-    
-    // ------------------------- بدء التشغيل -------------------------
-    function init() {
-        initializeUsers();
-        showLoginScreen();
-    }
-    
-    // ربط الأحداث
-    document.getElementById('doLoginBtn').addEventListener('click', doLogin);
-    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') doLogin();
-    });
-    document.getElementById('loginUsername').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') doLogin();
-    });
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-    
-    init();
-</script>
-</body>
-</html>
+        verifyAdmin((isAdmin) => {
+            if (isAdmin) {
+                if (confirm(`⚠️ هل أنت متأكد من حذف المستخدم "${username}"؟`)) {
+                    users = users.filter(u => u.username !== username);
+                    saveAllData();
