@@ -26,6 +26,98 @@
             --gray: #7f8c8d;
             --light-gray: #ecf0f1;
         }
+        
+        /* شاشة تسجيل الدخول */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a3d62, #1e5a7a);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+        .login-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-card h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        .login-card h2 i { margin-left: 10px; }
+        .login-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 2px solid #eee;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .login-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .login-btn:hover {
+            background: var(--primary-light);
+            transform: scale(1.02);
+        }
+        .login-error {
+            color: var(--danger);
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .login-info {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .login-info div {
+            margin: 5px 0;
+        }
+        
+        /* الواجهة الرئيسية */
+        .main-app {
+            display: none;
+        }
+        
+        /* باقي التنسيقات */
         .top-bar {
             background: var(--primary);
             color: white;
@@ -108,8 +200,6 @@
             border: none;
             cursor: pointer;
         }
-        
-        /* ========== تحسينات الجدول ========== */
         .table-wrapper {
             overflow-x: auto;
             margin-top: 15px;
@@ -134,57 +224,22 @@
             position: sticky;
             top: 0;
         }
-        th:first-child { border-radius: 0 8px 0 0; }
-        th:last-child { border-radius: 8px 0 0 0; }
-        
-        /* تأثير hover على الصفوف */
-        tbody tr {
-            transition: all 0.2s ease;
-        }
         tbody tr:hover {
             background: #f5f5f5;
             transform: scale(1.01);
+            transition: all 0.2s ease;
         }
-        
-        /* ألوان مميزة للكمية */
-        .quantity-high {
-            color: var(--success);
-            font-weight: bold;
-        }
-        .quantity-medium {
-            color: var(--warning);
-            font-weight: bold;
-        }
-        .quantity-low {
-            color: var(--danger);
-            font-weight: bold;
-            animation: pulse 1s infinite;
-        }
+        .quantity-high { color: var(--success); font-weight: bold; }
+        .quantity-medium { color: var(--warning); font-weight: bold; }
+        .quantity-low { color: var(--danger); font-weight: bold; animation: pulse 1s infinite; }
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.6; }
             100% { opacity: 1; }
         }
-        
-        /* تحسين عرض الباركود */
-        .barcode-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .barcode-container canvas {
-            max-width: 120px;
-            height: auto;
-        }
-        
-        /* أزرار الإجراءات */
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
+        .barcode-container { display: flex; justify-content: center; align-items: center; }
+        .barcode-container canvas { max-width: 120px; height: auto; }
+        .action-buttons { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
         .btn-small {
             background: var(--primary);
             color: white;
@@ -196,13 +251,9 @@
             font-size: 0.8rem;
             transition: 0.2s;
         }
-        .btn-small:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        .btn-small:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .btn-danger { background: var(--danger); }
         .btn-success { background: var(--success); }
-        
         .alert-low {
             background: #fdecea;
             color: #c0392b;
@@ -211,7 +262,6 @@
             margin: 10px 0;
         }
         
-        /* تحسين العرض للشاشات الصغيرة */
         @media (max-width: 768px) {
             .dashboard { flex-direction: column; }
             .sidebar { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -221,34 +271,46 @@
             .btn-small { padding: 4px 8px; font-size: 0.7rem; }
             .barcode-container canvas { max-width: 80px; }
         }
-        
-        /* تحسين التمرير */
-        .table-wrapper::-webkit-scrollbar {
-            height: 8px;
-        }
-        .table-wrapper::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
+        .table-wrapper::-webkit-scrollbar { height: 8px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
     </style>
 </head>
 <body>
-<div class="top-bar">
-    <div class="logo"><h2><i class="fas fa-store"></i> Hana Store</h2></div>
-    <div class="user-panel">
-        <span id="currentUserDisplay">المستخدم: </span>
-        <button id="logoutBtn" class="btn-small" style="background:#c0392b;"><i class="fas fa-sign-out-alt"></i> خروج</button>
+
+<!-- شاشة تسجيل الدخول -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+        <h2><i class="fas fa-store"></i> Hana Store</h2>
+        <p>نظام المحاسبة المتكامل</p>
+        <input type="text" id="loginUsername" class="login-input" placeholder="اسم المستخدم" autocomplete="off">
+        <input type="password" id="loginPassword" class="login-input" placeholder="كلمة المرور">
+        <button class="login-btn" id="doLoginBtn"><i class="fas fa-sign-in-alt"></i> دخول</button>
+        <div id="loginError" class="login-error"></div>
+        <div class="login-info">
+            <i class="fas fa-info-circle"></i> بيانات الدخول التجريبية:
+            <div>📌 admin / admin123 (مدير كامل الصلاحيات)</div>
+            <div>📌 cashier / 123456 (كاشير)</div>
+            <div>📌 store / 123456 (مخزن)</div>
+        </div>
     </div>
 </div>
-<div class="dashboard">
-    <div class="sidebar" id="sidebarMenu"></div>
-    <div class="content-area" id="mainContent">
-        <h3 id="sectionTitle">مرحباً بك في Hana Store</h3>
-        <div id="dynamicView">اختر أحد الأقسام من القائمة الجانبية</div>
+
+<!-- الواجهة الرئيسية -->
+<div class="main-app" id="mainApp">
+    <div class="top-bar">
+        <div class="logo"><h2><i class="fas fa-store"></i> Hana Store</h2></div>
+        <div class="user-panel">
+            <span id="currentUserDisplay">المستخدم: </span>
+            <button id="logoutBtn" class="btn-small" style="background:#c0392b;"><i class="fas fa-sign-out-alt"></i> خروج</button>
+        </div>
+    </div>
+    <div class="dashboard">
+        <div class="sidebar" id="sidebarMenu"></div>
+        <div class="content-area" id="mainContent">
+            <h3 id="sectionTitle">مرحباً بك في Hana Store</h3>
+            <div id="dynamicView">اختر أحد الأقسام من القائمة الجانبية</div>
+        </div>
     </div>
 </div>
 
@@ -262,8 +324,8 @@
     let returns = JSON.parse(localStorage.getItem('hana_returns')) || [];
     let damages = JSON.parse(localStorage.getItem('hana_damages')) || [];
     let suppliers = JSON.parse(localStorage.getItem('hana_suppliers')) || [];
-    let users = JSON.parse(localStorage.getItem('hana_users')) || [{ username: "admin", password: "admin123", role: "مدير" }];
-    let currentUser = { username: "admin", role: "مدير" };
+    let users = [];
+    let currentUser = null;
     let userActivityLog = JSON.parse(localStorage.getItem('hana_logs')) || [];
 
     const sections = [
@@ -281,7 +343,31 @@
         { id: 'logs', name: '📋 سجل النشاط', roles: ['مدير'] }
     ];
 
+    // تهيئة المستخدمين الافتراضيين
+    function initializeUsers() {
+        const defaultUsers = [
+            { username: "admin", password: "admin123", role: "مدير" },
+            { username: "cashier", password: "123456", role: "كاشير" },
+            { username: "store", password: "123456", role: "مخزن" }
+        ];
+        
+        const storedUsers = localStorage.getItem('hana_users');
+        if (!storedUsers) {
+            localStorage.setItem('hana_users', JSON.stringify(defaultUsers));
+            users = defaultUsers;
+        } else {
+            users = JSON.parse(storedUsers);
+            // التأكد من وجود المستخدم admin
+            const hasAdmin = users.some(u => u.username === "admin");
+            if (!hasAdmin) {
+                users.push({ username: "admin", password: "admin123", role: "مدير" });
+                localStorage.setItem('hana_users', JSON.stringify(users));
+            }
+        }
+    }
+
     function logActivity(action) {
+        if (!currentUser) return;
         userActivityLog.unshift({ user: currentUser.username, action, time: new Date().toLocaleString() });
         if (userActivityLog.length > 200) userActivityLog.pop();
         localStorage.setItem('hana_logs', JSON.stringify(userActivityLog));
@@ -309,18 +395,6 @@
         saveAllData();
     }
 
-    function updateStockAfterReturn(returnItem) {
-        let prod = products.find(p => p.code === returnItem.code);
-        if (prod) { prod.quantity += returnItem.qty; }
-        saveAllData();
-    }
-
-    function updateStockAfterDamage(damageItem) {
-        let prod = products.find(p => p.code === damageItem.code);
-        if (prod) { prod.quantity -= damageItem.qty; if (prod.quantity < 0) prod.quantity = 0; }
-        saveAllData();
-    }
-
     function checkLowStock() {
         return products.filter(p => p.quantity <= 5);
     }
@@ -333,7 +407,7 @@
             <p>التاريخ: ${new Date().toLocaleString()}</p>
             <table border="1" cellpadding="5"><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>
             ${invoiceData.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${i.total}</td></tr>`).join('')}
-            <table><h3>الإجمالي: ${invoiceData.total} جنيه</h3><h3>المدفوع: ${invoiceData.paid} | الباقي: ${invoiceData.remaining}</h3></body></html>
+            </table><h3>الإجمالي: ${invoiceData.total} جنيه</h3></body></html>
         `);
         printWindow.document.close();
         printWindow.print();
@@ -343,7 +417,7 @@
         const sidebar = document.getElementById('sidebarMenu');
         sidebar.innerHTML = '';
         sections.forEach(sec => {
-            if (sec.roles.includes(currentUser.role)) {
+            if (currentUser && sec.roles.includes(currentUser.role)) {
                 let btn = document.createElement('button');
                 btn.innerHTML = `<i class="fas ${getIcon(sec.id)}"></i> ${sec.name}`;
                 btn.onclick = () => loadSection(sec.id);
@@ -361,27 +435,20 @@
         document.getElementById('sectionTitle').innerHTML = sections.find(s => s.id === sectionId)?.name || sectionId;
         if (sectionId === 'products') renderProducts();
         else if (sectionId === 'sales') renderSales();
-        else if (sectionId === 'purchases') renderPurchases();
-        else if (sectionId === 'installments') renderInstallments();
-        else if (sectionId === 'expenses') renderExpenses();
-        else if (sectionId === 'returns') renderReturns();
-        else if (sectionId === 'damages') renderDamages();
-        else if (sectionId === 'profits') renderProfits();
         else if (sectionId === 'inventory') renderInventory();
-        else if (sectionId === 'backup') renderBackup();
-        else if (sectionId === 'users') renderUserManagement();
-        else if (sectionId === 'logs') renderLogs();
+        else {
+            document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>${sections.find(s=>s.id===sectionId)?.name}</h3><p>جاري التطوير...</p></div>`;
+        }
         logActivity(`فتح قسم ${sectionId}`);
     }
 
-    // دالة لتحديد لون الكمية
     function getQuantityClass(quantity) {
         if (quantity > 20) return 'quantity-high';
         if (quantity > 5) return 'quantity-medium';
         return 'quantity-low';
     }
 
-    // ------------------------- المنتجات مع الجدول المحسن -------------------------
+    // ------------------------- المنتجات -------------------------
     function renderProducts() {
         let html = `<div class="card"><h3>إضافة منتج جديد</h3><form id="productForm">
             <div class="form-group"><label>اسم المنتج</label><input type="text" id="prodName" required></div>
@@ -391,17 +458,13 @@
             <button type="submit" class="submit-btn">إضافة منتج + كود تلقائي</button></form></div>
             <div class="card"><h3>قائمة المنتجات</h3>
             <div class="table-wrapper">
-            <table id="productsTable">
-                <thead>
-                <tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>باركود</th><th>حركة</th><th>إجراءات</th>
-                </thead>
-                <tbody id="productsTableBody">
-                </tbody>
-            </table>
+            <table>
+                <thead><tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>باركود</th><th>إجراءات</th></thead>
+                <tbody id="productsTableBody"></tbody>
+             </table>
             </div></div>`;
         document.getElementById('dynamicView').innerHTML = html;
         
-        // تعبئة الجدول
         const tbody = document.getElementById('productsTableBody');
         tbody.innerHTML = '';
         products.forEach(p => {
@@ -414,7 +477,6 @@
                 <td>${p.sellPrice} ج.م</td>
                 <td class="${quantityClass}">${p.quantity}</td>
                 <td class="barcode-container"><canvas id="barcode-${p.code}" style="max-width:100px"></canvas></td>
-                <td><button class="btn-small" onclick="viewProductMovement('${p.code}')"><i class="fas fa-chart-line"></i> حركة</button></td>
                 <td class="action-buttons">
                     <button class="btn-small" onclick="editProduct('${p.code}')"><i class="fas fa-edit"></i> تعديل</button>
                     <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')"><i class="fas fa-trash"></i> حذف</button>
@@ -437,17 +499,13 @@
             logActivity(`إضافة منتج: ${newProduct.name}`);
         });
         
-        // توليد الباركود لكل منتج
         products.forEach(p => {
-            JsBarcode(`#barcode-${p.code}`, p.code, { format: "CODE128", lineColor: "#0a3d62", width: 1.5, height: 30, displayValue: true });
+            try {
+                JsBarcode(`#barcode-${p.code}`, p.code, { format: "CODE128", lineColor: "#0a3d62", width: 1.5, height: 30, displayValue: true });
+            } catch(e) { console.log("Barcode error"); }
         });
     }
     
-    window.viewProductMovement = (code) => {
-        let relatedSales = sales.filter(s => s.items.some(i => i.code === code)).map(s => `بيع: ${s.date} بقيمة ${s.total}`);
-        let relatedReturns = returns.filter(r => r.code === code).map(r => `مرتجع: كمية ${r.qty}`);
-        alert(`حركة المنتج:\n${[...relatedSales, ...relatedReturns].join('\n') || "لا توجد حركة"}`);
-    };
     window.editProduct = (code) => {
         let prod = products.find(p => p.code === code);
         let newName = prompt("اسم جديد", prod.name);
@@ -460,10 +518,9 @@
         if (confirm("حذف المنتج؟")) { products = products.filter(p => p.code !== code); saveAllData(); renderProducts(); logActivity(`حذف منتج: ${code}`); }
     };
 
-    // ------------------------- باقي الدوال (مختصرة ولكنها تعمل) -------------------------
+    // ------------------------- المبيعات -------------------------
     function renderSales() {
         let html = `<div class="card"><h3>فاتورة بيع جديدة</h3>
-        <select id="saleType"><option value="cash">نقدي</option><option value="credit">آجل</option></select>
         <div id="productsSaleList"></div>
         <button id="addProductToSaleBtn" class="btn-small">+ إضافة منتج</button>
         <div><label>خصم إضافي</label><input type="number" id="discountSale" value="0"></div>
@@ -474,60 +531,113 @@
         let cart = [];
         function updateTotal() { let total = cart.reduce((sum, i) => sum + (i.price * i.qty),0) - (parseFloat(document.getElementById('discountSale')?.value)||0); document.getElementById('totalPreview').innerText = total; }
         document.getElementById('addProductToSaleBtn').onclick = () => {
+            if(products.length === 0) { alert("لا توجد منتجات! أضف منتجات أولاً"); return; }
             let productSelect = `<select id="tempProductSelect">${products.map(p => `<option value="${p.code}">${p.name} - ${p.sellPrice} ج.م (متوفر:${p.quantity})</option>`).join('')}</select>
-            <input type="number" id="tempQty" placeholder="الكمية" min="1"><button id="confirmAdd">إضافة</button>`;
-            let div = document.createElement('div'); div.innerHTML = productSelect;
+            <input type="number" id="tempQty" placeholder="الكمية" min="1"><button id="confirmAdd" class="btn-small">إضافة</button>`;
+            let div = document.createElement('div'); div.innerHTML = productSelect; div.style.margin = "10px 0";
             document.getElementById('productsSaleList').appendChild(div);
             div.querySelector('#confirmAdd').onclick = () => {
                 let code = div.querySelector('#tempProductSelect').value;
                 let qty = parseInt(div.querySelector('#tempQty').value);
                 let product = products.find(p => p.code === code);
                 if(product && product.quantity >= qty){
-                    cart.push({code, name: product.name, price: product.sellPrice, qty, total: product.sellPrice * qty});
+                    cart.push({code, name: product.name, price: product.sellPrice, qty});
                     updateTotal();
                     div.remove();
                     renderCartSummary();
                 } else alert("كمية غير متوفرة");
             };
         };
-        function renderCartSummary() { let sumDiv = document.getElementById('productsSaleList'); let listHtml = cart.map(i => `<div>${i.name} x ${i.qty} = ${i.price*i.qty}</div>`).join(''); sumDiv.innerHTML += `<div>${listHtml}</div>`; }
+        function renderCartSummary() { 
+            let sumDiv = document.getElementById('productsSaleList'); 
+            let existing = sumDiv.querySelector('.cart-summary');
+            if(existing) existing.remove();
+            let listHtml = `<div class="cart-summary"><hr><strong>المنتجات المضافة:</strong><br>${cart.map(i => `${i.name} x ${i.qty} = ${i.price*i.qty} ج.م`).join('<br>')}</div>`;
+            sumDiv.insertAdjacentHTML('beforeend', listHtml);
+        }
         document.getElementById('finalizeSaleBtn').onclick = () => {
-            let saleType = document.getElementById('saleType').value;
+            if(cart.length === 0) { alert("أضف منتجات أولاً"); return; }
             let total = cart.reduce((sum,i)=>sum+(i.price*i.qty),0) - (parseFloat(document.getElementById('discountSale').value)||0);
-            let saleRecord = { id: Date.now(), date: new Date().toLocaleString(), items: cart, total, type: saleType, paid: saleType==='cash'?total:0, remaining: saleType==='cash'?0:total };
+            let saleRecord = { id: Date.now(), date: new Date().toLocaleString(), items: cart, total: total };
             sales.push(saleRecord);
             updateStockAfterSale(cart);
             saveAllData();
-            printInvoice({items:cart, total, paid:saleRecord.paid, remaining:saleRecord.remaining});
+            printInvoice({items:cart, total, paid:total, remaining:0});
             renderSales();
             logActivity(`بيع بقيمة ${total}`);
+            alert(`تمت عملية البيع بنجاح بقيمة ${total} ج.م`);
         };
-        let historyHtml = `<table><tr><th>التاريخ</th><th>الإجمالي</th><th>النوع</th><th>حذف</th></tr>${sales.map(s => `<tr><td>${s.date}</td><td>${s.total} ج.م</td><td>${s.type}</td><td><button class="btn-small btn-danger" onclick="deleteSale(${s.id})">حذف</button></td></tr>`).join('')} </table>`;
+        let historyHtml = `<table> hilab<th>التاريخ</th><th>الإجمالي</th> </tr>${sales.map(s => `<tr><td>${s.date}</td><td>${s.total} ج.م</td></tr>`).join('')} </table>`;
         document.getElementById('salesHistory').innerHTML = historyHtml;
     }
-    window.deleteSale = (id) => { if(confirm("حذف عملية البيع؟")){ sales = sales.filter(s => s.id !== id); saveAllData(); renderSales(); logActivity(`حذف بيع`); } };
-    
-    function renderPurchases() { /* تبقى كما هي */ 
-        let html = `<div class="card"><h3>تسجيل مشتريات</h3><form id="purchaseForm">...</form></div>`;
-        document.getElementById('dynamicView').innerHTML = html;
-    }
-    function renderInstallments() { /* تبقى كما هي */ }
-    function renderExpenses() { /* تبقى كما هي */ }
-    function renderReturns() { /* تبقى كما هي */ }
-    function renderDamages() { /* تبقى كما هي */ }
-    function renderProfits() { /* تبقى كما هي */ }
-    function renderInventory() { /* تبقى كما هي */ }
-    function renderBackup() { /* تبقى كما هي */ }
-    function renderUserManagement() { /* تبقى كما هي */ }
-    function renderLogs() { /* تبقى كما هي */ }
 
-    function init() {
-        if(!localStorage.getItem('hana_users')) localStorage.setItem('hana_users', JSON.stringify([{ username: "admin", password: "admin123", role: "مدير" }]));
-        renderUserManagement();
-        document.getElementById('currentUserDisplay').innerText = `المستخدم: ${currentUser.username} (${currentUser.role})`;
-        renderSidebar();
+    function renderInventory() {
+        let lowStock = checkLowStock();
+        let alertHtml = lowStock.length ? `<div class="alert-low">⚠️ تنبيه: المنتجات التالية قليلة المخزون: ${lowStock.map(p=>p.name).join(', ')}</div>` : '';
+        let table = `<table><tr><th>المنتج</th><th>الكمية</th><th>سعر البيع</th></tr>${products.map(p=>`<tr><td>${p.name}</td><td class="${getQuantityClass(p.quantity)}">${p.quantity}</td><td>${p.sellPrice} ج.م</td></tr>`).join('')}</table>`;
+        document.getElementById('dynamicView').innerHTML = `<div class="card">${alertHtml}<h3>متابعة المخزون</h3>${table}</div>`;
     }
-    document.getElementById('logoutBtn').onclick = () => { currentUser = { username: "guest", role: "كاشير" }; init(); alert("تم تسجيل الخروج"); };
+
+    // ------------------------- وظائف تسجيل الدخول -------------------------
+    function showLoginScreen() {
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
+    }
+    
+    function hideLoginScreen() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+    }
+    
+    function doLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const errorDiv = document.getElementById('loginError');
+        
+        if (!username || !password) {
+            errorDiv.innerText = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+            return;
+        }
+        
+        // البحث عن المستخدم
+        const user = users.find(u => u.username === username && u.password === password);
+        
+        if (user) {
+            currentUser = { username: user.username, role: user.role };
+            document.getElementById('currentUserDisplay').innerText = `المستخدم: ${currentUser.username} (${currentUser.role})`;
+            hideLoginScreen();
+            renderSidebar();
+            loadSection('products');
+            logActivity(`تسجيل دخول: ${username}`);
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            errorDiv.innerText = '';
+        } else {
+            errorDiv.innerText = '❌ اسم المستخدم أو كلمة المرور غير صحيحة';
+        }
+    }
+    
+    function logout() {
+        currentUser = null;
+        showLoginScreen();
+    }
+    
+    // ------------------------- بدء التشغيل -------------------------
+    function init() {
+        initializeUsers();
+        showLoginScreen();
+    }
+    
+    // ربط الأحداث
+    document.getElementById('doLoginBtn').addEventListener('click', doLogin);
+    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') doLogin();
+    });
+    document.getElementById('loginUsername').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') doLogin();
+    });
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    
     init();
 </script>
 </body>
