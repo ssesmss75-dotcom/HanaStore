@@ -129,10 +129,107 @@ function show(type) {
     `;
   }
 
-  // SALES (INVOICE)
+  // SALES
   if (type === "sales") {
     app.innerHTML = `
       <h3>🧾 فاتورة بيع</h3>
 
       <select id="saleProduct">
-        ${products.map((p,i)=> `<option value="${i}">${p.name} (المخزون: ${p.qty})</option>`).join("")
+        ${products.map((p,i)=> `<option value="${i}">${p.name} (المخزون: ${p.qty})</option>`).join("")}
+      </select>
+
+      <input id="saleQty" type="number" placeholder="الكمية">
+      <button onclick="addToCart()">إضافة للسلة</button>
+
+      <div id="cart"></div>
+      <button onclick="checkout()">إتمام البيع</button>
+    `;
+
+    renderCart();
+  }
+}
+
+// ================= PRODUCTS =================
+function addProduct() {
+  let name = document.getElementById("pName").value;
+  let qty = parseInt(document.getElementById("pQty").value);
+  let price = parseFloat(document.getElementById("pPrice").value);
+
+  if (!name || !qty || !price) return;
+
+  products.push({ name, qty, price });
+  save();
+  show("products");
+}
+
+function deleteProduct(i) {
+  products.splice(i,1);
+  save();
+  show("products");
+}
+
+// ================= CUSTOMERS =================
+function addCustomer() {
+  let name = document.getElementById("cName").value;
+  let phone = document.getElementById("cPhone").value;
+
+  if (!name || !phone) return;
+
+  customers.push({ name, phone });
+  save();
+  show("customers");
+}
+
+// ================= CART =================
+function addToCart() {
+  let index = document.getElementById("saleProduct").value;
+  let qty = parseInt(document.getElementById("saleQty").value);
+
+  if (!products[index] || qty <= 0) return;
+
+  cart.push({
+    productIndex: index,
+    name: products[index].name,
+    qty: qty,
+    price: products[index].price
+  });
+
+  renderCart();
+}
+
+function renderCart() {
+  let div = document.getElementById("cart");
+  if (!div) return;
+
+  div.innerHTML = cart.map((item,i)=>`
+    <div class="card">
+      ${item.name} - ${item.qty} × ${item.price}
+      <button onclick="removeFromCart(${i})">❌</button>
+    </div>
+  `).join("");
+}
+
+function removeFromCart(i) {
+  cart.splice(i,1);
+  renderCart();
+}
+
+function checkout() {
+  cart.forEach(item => {
+    products[item.productIndex].qty -= item.qty;
+  });
+
+  sales.push({ items: cart, date: new Date() });
+  cart = [];
+
+  save();
+  alert("تم البيع بنجاح ✅");
+  show("sales");
+}
+
+// default view
+show("products");
+</script>
+
+</body>
+</html>
