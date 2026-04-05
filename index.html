@@ -141,6 +141,20 @@
             cursor: pointer;
         }
         
+        /* نافذة تغيير كلمة المرور */
+        .change-password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10002;
+            justify-content: center;
+            align-items: center;
+        }
+        
         /* الواجهة الرئيسية */
         .main-app {
             display: none;
@@ -162,6 +176,14 @@
             background: #1e5a7a;
             padding: 5px 15px;
             border-radius: 30px;
+        }
+        .user-panel span {
+            font-size: 0.9rem;
+        }
+        .last-login {
+            font-size: 0.7rem;
+            color: #ffd700;
+            margin-right: 10px;
         }
         .dashboard {
             display: flex;
@@ -238,6 +260,7 @@
         }
         .btn-danger { background: var(--danger); }
         .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); }
         
         /* جدول المستخدمين */
         .users-table {
@@ -298,12 +321,31 @@
     </div>
 </div>
 
+<!-- نافذة تغيير كلمة المرور للمستخدم العادي -->
+<div id="changePasswordModal" class="change-password-modal">
+    <div class="modal-content">
+        <h3><i class="fas fa-key"></i> تغيير كلمة المرور</h3>
+        <input type="password" id="oldPassword" placeholder="كلمة المرور الحالية">
+        <input type="password" id="newPassword1" placeholder="كلمة المرور الجديدة">
+        <input type="password" id="newPassword2" placeholder="تأكيد كلمة المرور الجديدة">
+        <div id="changePassError" style="color:red; font-size:0.8rem;"></div>
+        <div class="modal-buttons">
+            <button id="confirmChangePassBtn" class="btn-success">تغيير</button>
+            <button id="cancelChangePassBtn" class="btn-danger">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <!-- الواجهة الرئيسية -->
 <div class="main-app" id="mainApp">
     <div class="top-bar">
         <div class="logo"><h2><i class="fas fa-store"></i> Hana Store</h2></div>
         <div class="user-panel">
-            <span id="currentUserDisplay"></span>
+            <div>
+                <span id="currentUserDisplay"></span>
+                <div class="last-login" id="lastLoginDisplay"></div>
+            </div>
+            <button id="changeMyPasswordBtn" class="btn-small btn-warning"><i class="fas fa-key"></i> تغيير كلمة المرور</button>
             <button id="logoutBtn" class="btn-small" style="background:#c0392b;"><i class="fas fa-sign-out-alt"></i> خروج</button>
         </div>
     </div>
@@ -330,6 +372,7 @@
     let currentUser = null;
     let userActivityLog = JSON.parse(localStorage.getItem('hana_logs')) || [];
     let pendingAction = null; // لتخزين الإجراء المعلق
+    let currentSessionId = null;
 
     // الأقسام
     const sections = [
@@ -342,10 +385,10 @@
         { id: 'logs', name: '📋 سجل النشاط', roles: ['مدير'] }
     ];
 
-    // تهيئة المستخدمين
+    // تهيئة المستخدمين مع إضافة حقل lastLogin
     function initializeUsers() {
         const defaultUsers = [
-            { username: "admin", password: "admin123", role: "مدير" }
+            { username: "admin", password: "admin123", role: "مدير", lastLogin: null }
         ];
         const storedUsers = localStorage.getItem('hana_users');
         if (!storedUsers) {
@@ -353,9 +396,20 @@
             users = defaultUsers;
         } else {
             users = JSON.parse(storedUsers);
+            // التأكد من وجود حقل lastLogin لجميع المستخدمين
+            let updated = false;
+            users.forEach(user => {
+                if (!user.hasOwnProperty('lastLogin')) {
+                    user.lastLogin = null;
+                    updated = true;
+                }
+            });
+            if (updated) {
+                localStorage.setItem('hana_users', JSON.stringify(users));
+            }
             const hasAdmin = users.some(u => u.username === "admin");
             if (!hasAdmin) {
-                users.push({ username: "admin", password: "admin123", role: "مدير" });
+                users.push({ username: "admin", password: "admin123", role: "مدير", lastLogin: null });
                 localStorage.setItem('hana_users', JSON.stringify(users));
             }
         }
@@ -379,6 +433,14 @@
         pendingAction = null;
     }
 
+    function closeChangePasswordModal() {
+        document.getElementById('changePasswordModal').style.display = 'none';
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('newPassword1').value = '';
+        document.getElementById('newPassword2').value = '';
+        document.getElementById('changePassError').innerText = '';
+    }
+
     function checkAdminCredentials() {
         const username = document.getElementById('confirmAdminUser').value;
         const password = document.getElementById('confirmAdminPass').value;
@@ -390,6 +452,87 @@
         } else {
             document.getElementById('confirmError').innerText = '❌ بيانات المدير غير صحيحة';
         }
+    }
+
+    // تسجيل الدخول مع تحديث آخر تسجيل دخول
+    function login(username, password) {
+        const user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+            currentUser = user;
+            // تحديث آخر تسجيل دخول
+            user.lastLogin = new Date().toLocaleString();
+            localStorage.setItem('hana_users', JSON.stringify(users));
+            
+            // إنشاء جلسة (Session ID)
+            currentSessionId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            sessionStorage.setItem('currentSession', JSON.stringify({
+                userId: user.username,
+                sessionId: currentSessionId,
+                loginTime: new Date().toISOString()
+            }));
+            
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('currentUserDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
+            
+            // عرض آخر تسجيل دخول
+            if (user.lastLogin && user.lastLogin !== user.loginTime) {
+                document.getElementById('lastLoginDisplay').innerHTML = `🕒 آخر دخول: ${user.lastLogin}`;
+            } else {
+                document.getElementById('lastLoginDisplay').innerHTML = `🕒 أول تسجيل دخول`;
+            }
+            
+            renderSidebar();
+            loadSection('products');
+            logActivity(`تسجيل دخول: ${username}`);
+        } else {
+            document.getElementById('loginError').innerText = '❌ اسم المستخدم أو كلمة المرور غير صحيحة';
+        }
+    }
+
+    // تسجيل الخروج
+    function logout() {
+        if (currentUser) {
+            logActivity(`تسجيل خروج: ${currentUser.username}`);
+        }
+        sessionStorage.removeItem('currentSession');
+        currentUser = null;
+        currentSessionId = null;
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+
+    // تغيير كلمة المرور للمستخدم الحالي
+    function changeMyPassword(oldPass, newPass, confirmPass) {
+        if (newPass !== confirmPass) {
+            document.getElementById('changePassError').innerText = '❌ كلمة المرور الجديدة غير متطابقة';
+            return false;
+        }
+        
+        if (currentUser.password !== oldPass) {
+            document.getElementById('changePassError').innerText = '❌ كلمة المرور الحالية غير صحيحة';
+            return false;
+        }
+        
+        if (newPass.length < 4) {
+            document.getElementById('changePassError').innerText = '❌ كلمة المرور يجب أن تكون 4 أحرف على الأقل';
+            return false;
+        }
+        
+        currentUser.password = newPass;
+        // تحديث في مصفوفة users
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+        if (userIndex !== -1) {
+            users[userIndex].password = newPass;
+            localStorage.setItem('hana_users', JSON.stringify(users));
+        }
+        
+        logActivity(`تغيير كلمة المرور للمستخدم: ${currentUser.username}`);
+        closeChangePasswordModal();
+        alert('✅ تم تغيير كلمة المرور بنجاح');
+        return true;
     }
 
     function logActivity(action) {
@@ -411,6 +554,28 @@
         localStorage.setItem('hana_users', JSON.stringify(users));
         localStorage.setItem('hana_logs', JSON.stringify(userActivityLog));
     }
+
+    // التحقق من صحة الجلسة
+    function checkSession() {
+        const session = sessionStorage.getItem('currentSession');
+        if (!session && currentUser) {
+            logout();
+            return false;
+        }
+        if (session && currentUser) {
+            const sessionData = JSON.parse(session);
+            if (sessionData.userId !== currentUser.username) {
+                logout();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // التحقق من الجلسة كل دقيقة
+    setInterval(() => {
+        checkSession();
+    }, 60000);
 
     function generateProductCode() { return 'PRD-' + Date.now() + '-' + Math.floor(Math.random() * 1000); }
 
@@ -459,6 +624,7 @@
     }
 
     function loadSection(sectionId) {
+        if (!checkSession()) return;
         document.getElementById('sectionTitle').innerHTML = sections.find(s => s.id === sectionId)?.name || sectionId;
         if (sectionId === 'products') renderProducts();
         else if (sectionId === 'sales') renderSales();
@@ -498,8 +664,8 @@
         products.forEach(p => {
             let row = tbody.insertRow();
             row.innerHTML = `
-                <td>${p.code}</td><td>${p.name}</td><td>${p.buyPrice} ج.م</td><td>${p.sellPrice} ج.م</td>
-                <td>${p.quantity}</td>
+                <td>${p.code}</td><td>${p.name}</td><td>${p.buyPrice} ج.م</td>
+                <td>${p.sellPrice} ج.م</td><td>${p.quantity}</td>
                 <td><button class="btn-small" onclick="editProduct('${p.code}')">تعديل</button>
                 <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')">حذف</button></td>
             `;
@@ -634,7 +800,7 @@
         document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>سجل النشاطات</h3>${logsHtml || "لا توجد نشاطات"}</div>`;
     }
 
-    // ------------------------- إدارة المستخدمين (المطلوبة) -------------------------
+    // ------------------------- إدارة المستخدمين -------------------------
     function renderUserManagement() {
         let html = `
             <div class="card">
@@ -642,7 +808,7 @@
                 <p style="color:#666; margin-bottom:15px">🔒 فقط المدير يمكنه تعديل بيانات المستخدمين</p>
                 <table class="users-table">
                     <thead>
-                        <tr><th>اسم المستخدم</th><th>الصلاحية</th><th>الإجراءات</th></tr>
+                        <tr><th>اسم المستخدم</th><th>الصلاحية</th><th>آخر تسجيل دخول</th><th>الإجراءات</th></tr>
                     </thead>
                     <tbody id="usersTableBody"></tbody>
                 </table>
@@ -671,10 +837,11 @@
             row.innerHTML = `
                 <td>${user.username}</td>
                 <td>${user.role}</td>
+                <td>${user.lastLogin || 'لم يسجل بعد'}数量
                 <td>
                     <button class="btn-small" onclick="editUser('${user.username}')"><i class="fas fa-edit"></i> تعديل</button>
                     ${user.username !== 'admin' ? `<button class="btn-small btn-danger" onclick="deleteUser('${user.username}')"><i class="fas fa-trash"></i> حذف</button>` : '<span style="color:#999">لا يمكن حذف المدير</span>'}
-                </td>
+                数量
             `;
         });
         
@@ -696,7 +863,7 @@
                         return;
                     }
                     
-                    users.push({ username, password, role });
+                    users.push({ username, password, role, lastLogin: null });
                     saveAllData();
                     renderUserManagement();
                     logActivity(`إضافة مستخدم جديد: ${username} (${role})`);
@@ -754,3 +921,77 @@
                 if (confirm(`⚠️ هل أنت متأكد من حذف المستخدم "${username}"؟`)) {
                     users = users.filter(u => u.username !== username);
                     saveAllData();
+                    renderUserManagement();
+                    logActivity(`حذف مستخدم: ${username}`);
+                    alert(`✅ تم حذف المستخدم ${username} بنجاح`);
+                }
+            }
+        });
+    };
+
+    // ------------------------- تهيئة الأحداث -------------------------
+    function initEventListeners() {
+        document.getElementById('doLoginBtn').onclick = () => {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            login(username, password);
+        };
+        
+        document.getElementById('loginUsername').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('doLoginBtn').click();
+            }
+        });
+        
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('doLoginBtn').click();
+            }
+        });
+        
+        document.getElementById('logoutBtn').onclick = () => logout();
+        
+        document.getElementById('confirmYesBtn').onclick = () => checkAdminCredentials();
+        document.getElementById('confirmNoBtn').onclick = () => closeModal();
+        
+        document.getElementById('changeMyPasswordBtn').onclick = () => {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        };
+        
+        document.getElementById('confirmChangePassBtn').onclick = () => {
+            const oldPass = document.getElementById('oldPassword').value;
+            const newPass = document.getElementById('newPassword1').value;
+            const confirmPass = document.getElementById('newPassword2').value;
+            changeMyPassword(oldPass, newPass, confirmPass);
+        };
+        
+        document.getElementById('cancelChangePassBtn').onclick = () => closeChangePasswordModal();
+    }
+
+    // بدء التشغيل
+    initializeUsers();
+    initEventListeners();
+    
+    // التحقق من وجود جلسة سابقة
+    const savedSession = sessionStorage.getItem('currentSession');
+    if (savedSession) {
+        const sessionData = JSON.parse(savedSession);
+        const user = users.find(u => u.username === sessionData.userId);
+        if (user) {
+            currentUser = user;
+            currentSessionId = sessionData.sessionId;
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('currentUserDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
+            if (user.lastLogin) {
+                document.getElementById('lastLoginDisplay').innerHTML = `🕒 آخر دخول: ${user.lastLogin}`;
+            }
+            renderSidebar();
+            loadSection('products');
+        } else {
+            sessionStorage.removeItem('currentSession');
+        }
+    }
+</script>
+</body>
+</html>
