@@ -27,7 +27,6 @@
             --light-gray: #ecf0f1;
         }
         
-        /* شاشة تسجيل الدخول */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -100,7 +99,6 @@
             padding-top: 15px;
         }
         
-        /* نافذة تأكيد المدير */
         .modal {
             display: none;
             position: fixed;
@@ -141,7 +139,6 @@
             cursor: pointer;
         }
         
-        /* نافذة تغيير كلمة المرور */
         .change-password-modal {
             display: none;
             position: fixed;
@@ -155,7 +152,6 @@
             align-items: center;
         }
         
-        /* الواجهة الرئيسية */
         .main-app {
             display: none;
         }
@@ -262,7 +258,6 @@
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); }
         
-        /* جدول المستخدمين */
         .users-table {
             width: 100%;
             border-collapse: collapse;
@@ -280,6 +275,14 @@
             background: #f5f5f5;
         }
         
+        .alert-low {
+            background: #ffeaa7;
+            color: #d63031;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
         @media (max-width: 768px) {
             .dashboard { flex-direction: column; }
             .sidebar { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -290,7 +293,6 @@
 </head>
 <body>
 
-<!-- شاشة تسجيل الدخول -->
 <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
         <h2><i class="fas fa-store"></i> Hana Store</h2>
@@ -306,7 +308,6 @@
     </div>
 </div>
 
-<!-- نافذة تأكيد المدير -->
 <div id="adminConfirmModal" class="modal">
     <div class="modal-content">
         <h3><i class="fas fa-shield-alt"></i> تأكيد المدير</h3>
@@ -321,7 +322,6 @@
     </div>
 </div>
 
-<!-- نافذة تغيير كلمة المرور للمستخدم العادي -->
 <div id="changePasswordModal" class="change-password-modal">
     <div class="modal-content">
         <h3><i class="fas fa-key"></i> تغيير كلمة المرور</h3>
@@ -336,7 +336,6 @@
     </div>
 </div>
 
-<!-- الواجهة الرئيسية -->
 <div class="main-app" id="mainApp">
     <div class="top-bar">
         <div class="logo"><h2><i class="fas fa-store"></i> Hana Store</h2></div>
@@ -371,21 +370,25 @@
     let users = [];
     let currentUser = null;
     let userActivityLog = JSON.parse(localStorage.getItem('hana_logs')) || [];
-    let pendingAction = null; // لتخزين الإجراء المعلق
+    let pendingAction = null;
     let currentSessionId = null;
 
-    // الأقسام
     const sections = [
         { id: 'products', name: '📦 المنتجات', roles: ['مدير', 'كاشير', 'مخزن'] },
         { id: 'sales', name: '🧾 المبيعات', roles: ['مدير', 'كاشير'] },
-        { id: 'inventory', name: '📦 المخزون', roles: ['مدير', 'مخزن'] },
+        { id: 'purchases', name: '💰 المشتريات', roles: ['مدير', 'مخزن'] },
+        { id: 'expenses', name: '📉 المصروفات', roles: ['مدير'] },
+        { id: 'installments', name: '📅 التقسيط', roles: ['مدير', 'كاشير'] },
+        { id: 'returns', name: '🔄 المرتجعات', roles: ['مدير', 'كاشير'] },
+        { id: 'damages', name: '⚠️ التوالف', roles: ['مدير', 'مخزن'] },
+        { id: 'suppliers', name: '🏭 الموردين', roles: ['مدير', 'مخزن'] },
+        { id: 'inventory', name: '📊 المخزون', roles: ['مدير', 'مخزن'] },
         { id: 'users', name: '👥 المستخدمين', roles: ['مدير'] },
-        { id: 'profits', name: '📊 الأرباح', roles: ['مدير'] },
+        { id: 'profits', name: '📈 الأرباح', roles: ['مدير'] },
         { id: 'backup', name: '💾 نسخ احتياطي', roles: ['مدير'] },
         { id: 'logs', name: '📋 سجل النشاط', roles: ['مدير'] }
     ];
 
-    // تهيئة المستخدمين مع إضافة حقل lastLogin
     function initializeUsers() {
         const defaultUsers = [
             { username: "admin", password: "admin123", role: "مدير", lastLogin: null }
@@ -396,17 +399,12 @@
             users = defaultUsers;
         } else {
             users = JSON.parse(storedUsers);
-            // التأكد من وجود حقل lastLogin لجميع المستخدمين
-            let updated = false;
             users.forEach(user => {
                 if (!user.hasOwnProperty('lastLogin')) {
                     user.lastLogin = null;
-                    updated = true;
                 }
             });
-            if (updated) {
-                localStorage.setItem('hana_users', JSON.stringify(users));
-            }
+            localStorage.setItem('hana_users', JSON.stringify(users));
             const hasAdmin = users.some(u => u.username === "admin");
             if (!hasAdmin) {
                 users.push({ username: "admin", password: "admin123", role: "مدير", lastLogin: null });
@@ -415,7 +413,6 @@
         }
     }
 
-    // التحقق من صلاحيات المدير
     function verifyAdmin(callback) {
         if (currentUser.role === "مدير") {
             callback(true);
@@ -454,16 +451,13 @@
         }
     }
 
-    // تسجيل الدخول مع تحديث آخر تسجيل دخول
     function login(username, password) {
         const user = users.find(u => u.username === username && u.password === password);
         if (user) {
             currentUser = user;
-            // تحديث آخر تسجيل دخول
             user.lastLogin = new Date().toLocaleString();
             localStorage.setItem('hana_users', JSON.stringify(users));
             
-            // إنشاء جلسة (Session ID)
             currentSessionId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
             sessionStorage.setItem('currentSession', JSON.stringify({
                 userId: user.username,
@@ -475,8 +469,7 @@
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('currentUserDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
             
-            // عرض آخر تسجيل دخول
-            if (user.lastLogin && user.lastLogin !== user.loginTime) {
+            if (user.lastLogin) {
                 document.getElementById('lastLoginDisplay').innerHTML = `🕒 آخر دخول: ${user.lastLogin}`;
             } else {
                 document.getElementById('lastLoginDisplay').innerHTML = `🕒 أول تسجيل دخول`;
@@ -490,7 +483,6 @@
         }
     }
 
-    // تسجيل الخروج
     function logout() {
         if (currentUser) {
             logActivity(`تسجيل خروج: ${currentUser.username}`);
@@ -504,7 +496,6 @@
         document.getElementById('loginPassword').value = '';
     }
 
-    // تغيير كلمة المرور للمستخدم الحالي
     function changeMyPassword(oldPass, newPass, confirmPass) {
         if (newPass !== confirmPass) {
             document.getElementById('changePassError').innerText = '❌ كلمة المرور الجديدة غير متطابقة';
@@ -522,7 +513,6 @@
         }
         
         currentUser.password = newPass;
-        // تحديث في مصفوفة users
         const userIndex = users.findIndex(u => u.username === currentUser.username);
         if (userIndex !== -1) {
             users[userIndex].password = newPass;
@@ -555,7 +545,6 @@
         localStorage.setItem('hana_logs', JSON.stringify(userActivityLog));
     }
 
-    // التحقق من صحة الجلسة
     function checkSession() {
         const session = sessionStorage.getItem('currentSession');
         if (!session && currentUser) {
@@ -572,7 +561,6 @@
         return true;
     }
 
-    // التحقق من الجلسة كل دقيقة
     setInterval(() => {
         checkSession();
     }, 60000);
@@ -583,6 +571,14 @@
         itemsSold.forEach(sold => {
             let prod = products.find(p => p.code === sold.code);
             if (prod) { prod.quantity -= sold.qty; if (prod.quantity < 0) prod.quantity = 0; }
+        });
+        saveAllData();
+    }
+
+    function updateStockAfterPurchase(itemsPurchased) {
+        itemsPurchased.forEach(purchased => {
+            let prod = products.find(p => p.code === purchased.code);
+            if (prod) { prod.quantity += purchased.qty; }
         });
         saveAllData();
     }
@@ -619,7 +615,12 @@
     }
 
     function getIcon(id) {
-        const icons = { products: 'fa-box', sales: 'fa-cart-shopping', inventory: 'fa-warehouse', users: 'fa-users', profits: 'fa-chart-line', backup: 'fa-database', logs: 'fa-history' };
+        const icons = { 
+            products: 'fa-box', sales: 'fa-cart-shopping', purchases: 'fa-money-bill-wave',
+            expenses: 'fa-chart-line', installments: 'fa-calendar-alt', returns: 'fa-undo',
+            damages: 'fa-exclamation-triangle', suppliers: 'fa-truck', inventory: 'fa-warehouse',
+            users: 'fa-users', profits: 'fa-chart-line', backup: 'fa-database', logs: 'fa-history'
+        };
         return icons[id] || 'fa-folder';
     }
 
@@ -628,18 +629,18 @@
         document.getElementById('sectionTitle').innerHTML = sections.find(s => s.id === sectionId)?.name || sectionId;
         if (sectionId === 'products') renderProducts();
         else if (sectionId === 'sales') renderSales();
+        else if (sectionId === 'purchases') renderPurchases();
+        else if (sectionId === 'expenses') renderExpenses();
+        else if (sectionId === 'installments') renderInstallments();
+        else if (sectionId === 'returns') renderReturns();
+        else if (sectionId === 'damages') renderDamages();
+        else if (sectionId === 'suppliers') renderSuppliers();
         else if (sectionId === 'inventory') renderInventory();
         else if (sectionId === 'users') renderUserManagement();
         else if (sectionId === 'profits') renderProfits();
         else if (sectionId === 'backup') renderBackup();
         else if (sectionId === 'logs') renderLogs();
         logActivity(`فتح قسم ${sectionId}`);
-    }
-
-    function getQuantityClass(quantity) {
-        if (quantity > 20) return 'quantity-high';
-        if (quantity > 5) return 'quantity-medium';
-        return 'quantity-low';
     }
 
     // ------------------------- المنتجات -------------------------
@@ -649,14 +650,13 @@
             <div class="form-group"><label>سعر الشراء</label><input type="number" id="buyPrice" required></div>
             <div class="form-group"><label>سعر البيع</label><input type="number" id="sellPrice" required></div>
             <div class="form-group"><label>الكمية الأولية</label><input type="number" id="quantity" value="0"></div>
+            <div class="form-group"><label>الباركود (اختياري)</label><input type="text" id="barcode" placeholder="مسح الباركود"></div>
             <button type="submit" class="submit-btn">إضافة منتج</button></form></div>
             <div class="card"><h3>قائمة المنتجات</h3>
-            <div class="table-wrapper">
-            <table class="users-table">
-                <thead><tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>إجراءات</th></tr></thead>
+            <div class="table-wrapper"><table class="users-table">
+                <thead><tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>الباركود</th><th>إجراءات</th></tr></thead>
                 <tbody id="productsTableBody"></tbody>
-            </table>
-            </div></div>`;
+            </table></div></div>`;
         document.getElementById('dynamicView').innerHTML = html;
         
         const tbody = document.getElementById('productsTableBody');
@@ -665,7 +665,7 @@
             let row = tbody.insertRow();
             row.innerHTML = `
                 <td>${p.code}</td><td>${p.name}</td><td>${p.buyPrice} ج.م</td>
-                <td>${p.sellPrice} ج.م</td><td>${p.quantity}</td>
+                <td>${p.sellPrice} ج.م</td><td>${p.quantity}</td><td>${p.barcode || '-'}</td>
                 <td><button class="btn-small" onclick="editProduct('${p.code}')">تعديل</button>
                 <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')">حذف</button></td>
             `;
@@ -678,7 +678,8 @@
                 name: document.getElementById('prodName').value,
                 buyPrice: parseFloat(document.getElementById('buyPrice').value),
                 sellPrice: parseFloat(document.getElementById('sellPrice').value),
-                quantity: parseInt(document.getElementById('quantity').value)
+                quantity: parseInt(document.getElementById('quantity').value),
+                barcode: document.getElementById('barcode').value
             };
             products.push(newProduct);
             saveAllData();
@@ -694,8 +695,11 @@
         if (newName) prod.name = newName;
         let newSell = prompt("سعر بيع جديد", prod.sellPrice);
         if (newSell) prod.sellPrice = parseFloat(newSell);
+        let newBuy = prompt("سعر شراء جديد", prod.buyPrice);
+        if (newBuy) prod.buyPrice = parseFloat(newBuy);
         saveAllData(); renderProducts();
     };
+    
     window.deleteProduct = (code) => {
         if (confirm("حذف المنتج؟")) { products = products.filter(p => p.code !== code); saveAllData(); renderProducts(); logActivity(`حذف منتج: ${code}`); }
     };
@@ -753,10 +757,321 @@
         document.getElementById('salesHistory').innerHTML = historyHtml;
     }
 
+    // ------------------------- المشتريات -------------------------
+    function renderPurchases() {
+        let html = `<div class="card"><h3>تسجيل مشتريات جديدة</h3>
+        <div id="purchaseItemsList"></div>
+        <button id="addProductToPurchaseBtn" class="btn-small">+ إضافة منتج</button>
+        <div>إجمالي المشتريات: <span id="purchaseTotalPreview">0</span> ج.م</div>
+        <button id="finalizePurchaseBtn" class="submit-btn">تسجيل المشتريات</button></div>
+        <div class="card"><h3>سجل المشتريات</h3><div id="purchasesHistory"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        let purchaseCart = [];
+        function updatePurchaseTotal() { let total = purchaseCart.reduce((sum, i) => sum + (i.buyPrice * i.qty),0); document.getElementById('purchaseTotalPreview').innerText = total; }
+        
+        document.getElementById('addProductToPurchaseBtn').onclick = () => {
+            let productSelect = `<select id="tempPurchaseProductSelect"><option value="new">+ منتج جديد</option>${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select>
+            <input type="text" id="tempNewProductName" placeholder="اسم المنتج الجديد" style="display:none">
+            <input type="number" id="tempPurchaseQty" placeholder="الكمية" min="1">
+            <input type="number" id="tempPurchasePrice" placeholder="سعر الشراء">
+            <button id="confirmPurchaseAdd" class="btn-small">إضافة</button>`;
+            let div = document.createElement('div'); div.innerHTML = productSelect; div.style.margin = "10px 0";
+            document.getElementById('purchaseItemsList').appendChild(div);
+            let select = div.querySelector('#tempPurchaseProductSelect');
+            let newNameInput = div.querySelector('#tempNewProductName');
+            select.onchange = () => { newNameInput.style.display = select.value === 'new' ? 'inline-block' : 'none'; };
+            div.querySelector('#confirmPurchaseAdd').onclick = () => {
+                let code = select.value;
+                let qty = parseInt(div.querySelector('#tempPurchaseQty').value);
+                let buyPrice = parseFloat(div.querySelector('#tempPurchasePrice').value);
+                let productName = "";
+                if(code === 'new') {
+                    productName = newNameInput.value;
+                    if(!productName) { alert("أدخل اسم المنتج"); return; }
+                    let newProduct = { code: generateProductCode(), name: productName, buyPrice: buyPrice, sellPrice: buyPrice * 1.3, quantity: 0, barcode: '' };
+                    products.push(newProduct);
+                    saveAllData();
+                    code = newProduct.code;
+                } else {
+                    let existing = products.find(p => p.code === code);
+                    productName = existing.name;
+                }
+                purchaseCart.push({ code, name: productName, buyPrice, qty });
+                updatePurchaseTotal();
+                div.remove();
+                renderPurchaseSummary();
+            };
+        };
+        function renderPurchaseSummary() {
+            let sumDiv = document.getElementById('purchaseItemsList');
+            let existing = sumDiv.querySelector('.purchase-summary');
+            if(existing) existing.remove();
+            let listHtml = `<div class="purchase-summary"><hr><strong>المنتجات المضافة:</strong><br>${purchaseCart.map(i => `${i.name} x ${i.qty} = ${i.buyPrice*i.qty} ج.م`).join('<br>')}</div>`;
+            sumDiv.insertAdjacentHTML('beforeend', listHtml);
+        }
+        document.getElementById('finalizePurchaseBtn').onclick = () => {
+            if(purchaseCart.length === 0) { alert("أضف منتجات أولاً"); return; }
+            let total = purchaseCart.reduce((sum,i)=>sum+(i.buyPrice*i.qty),0);
+            let purchaseRecord = { id: Date.now(), date: new Date().toLocaleString(), items: purchaseCart, total: total };
+            purchases.push(purchaseRecord);
+            purchaseCart.forEach(item => {
+                let product = products.find(p => p.code === item.code);
+                if(product) { product.quantity += item.qty; }
+            });
+            saveAllData();
+            logActivity(`شراء بقيمة ${total}`);
+            alert(`تم تسجيل المشتريات بنجاح بقيمة ${total} ج.م`);
+            renderPurchases();
+        };
+        let historyHtml = `<table class="users-table"><tr><th>التاريخ</th><th>الإجمالي</th><tr>${purchases.map(p => `<tr><td>${p.date}</td><td>${p.total} ج.م</td></tr>`).join('')}</table>`;
+        document.getElementById('purchasesHistory').innerHTML = historyHtml;
+    }
+
+    // ------------------------- المصروفات -------------------------
+    function renderExpenses() {
+        let html = `<div class="card"><h3>تسجيل مصروف جديد</h3>
+        <div class="form-group"><label>نوع المصروف</label><input type="text" id="expenseType" placeholder="مثال: إيجار - كهرباء - رواتب"></div>
+        <div class="form-group"><label>المبلغ</label><input type="number" id="expenseAmount"></div>
+        <div class="form-group"><label>ملاحظات</label><textarea id="expenseNote" rows="2"></textarea></div>
+        <button id="addExpenseBtn" class="submit-btn">تسجيل المصروف</button></div>
+        <div class="card"><h3>سجل المصروفات</h3><div id="expensesList"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        
+        document.getElementById('addExpenseBtn').onclick = () => {
+            let expense = {
+                id: Date.now(),
+                type: document.getElementById('expenseType').value,
+                amount: parseFloat(document.getElementById('expenseAmount').value),
+                note: document.getElementById('expenseNote').value,
+                date: new Date().toLocaleString()
+            };
+            if(!expense.type || !expense.amount) { alert("يرجى إدخال نوع المصروف والمبلغ"); return; }
+            expenses.push(expense);
+            saveAllData();
+            logActivity(`إضافة مصروف: ${expense.type} - ${expense.amount} ج.م`);
+            renderExpenses();
+        };
+        
+        let expensesHtml = `<table class="users-table"><thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>ملاحظات</th><th>إجراءات</th></tr></thead><tbody>`;
+        expenses.forEach(exp => {
+            expensesHtml += `<tr><td>${exp.date}</td><td>${exp.type}</td><td>${exp.amount} ج.م</td><td>${exp.note || '-'}</td>
+            <td><button class="btn-small btn-danger" onclick="deleteExpense(${exp.id})">حذف</button></td></tr>`;
+        });
+        expensesHtml += `</tbody></table>`;
+        document.getElementById('expensesList').innerHTML = expensesHtml;
+    }
+    
+    window.deleteExpense = (id) => {
+        if(confirm("حذف هذا المصروف؟")) {
+            expenses = expenses.filter(e => e.id !== id);
+            saveAllData();
+            renderExpenses();
+            logActivity(`حذف مصروف`);
+        }
+    };
+
+    // ------------------------- التقسيط -------------------------
+    function renderInstallments() {
+        let html = `<div class="card"><h3>تسجيل عملية تقسيط جديدة</h3>
+        <div class="form-group"><label>اسم العميل</label><input type="text" id="customerName"></div>
+        <div class="form-group"><label>إجمالي المبلغ</label><input type="number" id="totalAmount"></div>
+        <div class="form-group"><label>عدد الأقساط</label><input type="number" id="installmentCount"></div>
+        <div class="form-group"><label>المدفوع مقدمًا</label><input type="number" id="paidUpfront" value="0"></div>
+        <button id="addInstallmentBtn" class="submit-btn">تسجيل التقسيط</button></div>
+        <div class="card"><h3>الأقساط الحالية</h3><div id="installmentsList"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        
+        document.getElementById('addInstallmentBtn').onclick = () => {
+            let customer = document.getElementById('customerName').value;
+            let total = parseFloat(document.getElementById('totalAmount').value);
+            let count = parseInt(document.getElementById('installmentCount').value);
+            let paid = parseFloat(document.getElementById('paidUpfront').value);
+            if(!customer || !total || !count) { alert("يرجى ملء جميع الحقول"); return; }
+            let remaining = total - paid;
+            let installmentValue = remaining / count;
+            let install = {
+                id: Date.now(),
+                customer: customer,
+                total: total,
+                paid: paid,
+                remaining: remaining,
+                count: count,
+                installmentValue: installmentValue,
+                payments: [],
+                date: new Date().toLocaleString()
+            };
+            installments.push(install);
+            saveAllData();
+            logActivity(`إضافة تقسيط للعميل: ${customer}`);
+            renderInstallments();
+        };
+        
+        let instHtml = `<table class="users-table"><thead><tr><th>العميل</th><th>إجمالي</th><th>مدفوع</th><th>متبقي</th><th>عدد الأقساط</th><th>قيمة القسط</th><th>إجراءات</th></tr></thead><tbody>`;
+        installments.forEach(inst => {
+            instHtml += `<tr><td>${inst.customer}</td><td>${inst.total} ج.م</td><td>${inst.paid} ج.م</td>
+            <td>${inst.remaining} ج.م</td><td>${inst.count}</td><td>${inst.installmentValue} ج.م</td>
+            <td><button class="btn-small" onclick="recordPayment(${inst.id})">تسجيل قسط</button>
+            <button class="btn-small btn-danger" onclick="deleteInstallment(${inst.id})">حذف</button></td></tr>`;
+        });
+        instHtml += `</tbody></table>`;
+        document.getElementById('installmentsList').innerHTML = instHtml;
+    }
+    
+    window.recordPayment = (id) => {
+        let inst = installments.find(i => i.id === id);
+        let amount = prompt(`المبلغ المدفوع (المتبقي: ${inst.remaining} ج.م)`);
+        if(amount) {
+            let payment = parseFloat(amount);
+            if(payment > inst.remaining) { alert("المبلغ أكبر من المتبقي!"); return; }
+            inst.remaining -= payment;
+            inst.paid += payment;
+            inst.payments.push({ amount: payment, date: new Date().toLocaleString() });
+            if(inst.remaining <= 0) {
+                alert(`✅ تم سداد كامل المبلغ للعميل ${inst.customer}`);
+            }
+            saveAllData();
+            renderInstallments();
+            logActivity(`تسجيل قسط للعميل ${inst.customer} بقيمة ${payment}`);
+        }
+    };
+    
+    window.deleteInstallment = (id) => {
+        if(confirm("حذف عملية التقسيط؟")) {
+            installments = installments.filter(i => i.id !== id);
+            saveAllData();
+            renderInstallments();
+            logActivity(`حذف عملية تقسيط`);
+        }
+    };
+
+    // ------------------------- المرتجعات -------------------------
+    function renderReturns() {
+        let html = `<div class="card"><h3>تسجيل مرتجع</h3>
+        <div class="form-group"><label>اختر المنتج</label><select id="returnProductSelect"><option value="">اختر منتج</option>${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select></div>
+        <div class="form-group"><label>الكمية المرتجعة</label><input type="number" id="returnQty"></div>
+        <div class="form-group"><label>سبب الإرجاع</label><textarea id="returnReason" rows="2"></textarea></div>
+        <button id="addReturnBtn" class="submit-btn">تسجيل المرتجع</button></div>
+        <div class="card"><h3>سجل المرتجعات</h3><div id="returnsList"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        
+        document.getElementById('addReturnBtn').onclick = () => {
+            let code = document.getElementById('returnProductSelect').value;
+            let qty = parseInt(document.getElementById('returnQty').value);
+            let reason = document.getElementById('returnReason').value;
+            if(!code || !qty) { alert("اختر المنتج وأدخل الكمية"); return; }
+            let product = products.find(p => p.code === code);
+            if(qty > product.quantity) { alert("الكمية المرتجعة أكبر من المتوفرة!"); return; }
+            product.quantity -= qty;
+            let returnRecord = {
+                id: Date.now(),
+                productCode: code,
+                productName: product.name,
+                quantity: qty,
+                reason: reason,
+                date: new Date().toLocaleString()
+            };
+            returns.push(returnRecord);
+            saveAllData();
+            logActivity(`مرتجع منتج: ${product.name} - كمية ${qty}`);
+            renderReturns();
+        };
+        
+        let returnsHtml = `<table class="users-table"><thead><tr><th>التاريخ</th><th>المنتج</th><th>الكمية</th><th>السبب</th></tr></thead><tbody>`;
+        returns.forEach(r => {
+            returnsHtml += `<tr><td>${r.date}</td><td>${r.productName}</td><td>${r.quantity}</td><td>${r.reason || '-'}</td></tr>`;
+        });
+        returnsHtml += `</tbody></table>`;
+        document.getElementById('returnsList').innerHTML = returnsHtml;
+    }
+
+    // ------------------------- التوالف -------------------------
+    function renderDamages() {
+        let html = `<div class="card"><h3>تسجيل تالف</h3>
+        <div class="form-group"><label>اختر المنتج</label><select id="damageProductSelect"><option value="">اختر منتج</option>${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select></div>
+        <div class="form-group"><label>الكمية التالفة</label><input type="number" id="damageQty"></div>
+        <div class="form-group"><label>سبب التلف</label><textarea id="damageReason" rows="2"></textarea></div>
+        <button id="addDamageBtn" class="submit-btn">تسجيل التالف</button></div>
+        <div class="card"><h3>سجل التوالف</h3><div id="damagesList"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        
+        document.getElementById('addDamageBtn').onclick = () => {
+            let code = document.getElementById('damageProductSelect').value;
+            let qty = parseInt(document.getElementById('damageQty').value);
+            let reason = document.getElementById('damageReason').value;
+            if(!code || !qty) { alert("اختر المنتج وأدخل الكمية"); return; }
+            let product = products.find(p => p.code === code);
+            if(qty > product.quantity) { alert("الكمية التالفة أكبر من المتوفرة!"); return; }
+            product.quantity -= qty;
+            let damageRecord = {
+                id: Date.now(),
+                productCode: code,
+                productName: product.name,
+                quantity: qty,
+                reason: reason,
+                date: new Date().toLocaleString()
+            };
+            damages.push(damageRecord);
+            saveAllData();
+            logActivity(`تلف منتج: ${product.name} - كمية ${qty}`);
+            renderDamages();
+        };
+        
+        let damagesHtml = `<table class="users-table"><thead><tr><th>التاريخ</th><th>المنتج</th><th>الكمية</th><th>السبب</th></tr></thead><tbody>`;
+        damages.forEach(d => {
+            damagesHtml += `<tr><td>${d.date}</td><td>${d.productName}</td><td>${d.quantity}</td><td>${d.reason || '-'}</td></tr>`;
+        });
+        damagesHtml += `</tbody></table>`;
+        document.getElementById('damagesList').innerHTML = damagesHtml;
+    }
+
+    // ------------------------- الموردين -------------------------
+    function renderSuppliers() {
+        let html = `<div class="card"><h3>إضافة مورد جديد</h3>
+        <div class="form-group"><label>اسم المورد</label><input type="text" id="supplierName"></div>
+        <div class="form-group"><label>رقم الهاتف</label><input type="text" id="supplierPhone"></div>
+        <div class="form-group"><label>العنوان</label><input type="text" id="supplierAddress"></div>
+        <button id="addSupplierBtn" class="submit-btn">إضافة مورد</button></div>
+        <div class="card"><h3>قائمة الموردين</h3><div id="suppliersList"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        
+        document.getElementById('addSupplierBtn').onclick = () => {
+            let name = document.getElementById('supplierName').value;
+            if(!name) { alert("أدخل اسم المورد"); return; }
+            let supplier = {
+                id: Date.now(),
+                name: name,
+                phone: document.getElementById('supplierPhone').value,
+                address: document.getElementById('supplierAddress').value,
+                date: new Date().toLocaleString()
+            };
+            suppliers.push(supplier);
+            saveAllData();
+            logActivity(`إضافة مورد: ${name}`);
+            renderSuppliers();
+        };
+        
+        let suppliersHtml = `<table class="users-table"><thead><tr><th>الاسم</th><th>الهاتف</th><th>العنوان</th><th>تاريخ الإضافة</th><th>إجراءات</th></tr></thead><tbody>`;
+        suppliers.forEach(s => {
+            suppliersHtml += `<tr><td>${s.name}</td><td>${s.phone || '-'}</td><td>${s.address || '-'}</td><td>${s.date}</td>
+            <td><button class="btn-small btn-danger" onclick="deleteSupplier(${s.id})">حذف</button></td></tr>`;
+        });
+        suppliersHtml += `</tbody></table>`;
+        document.getElementById('suppliersList').innerHTML = suppliersHtml;
+    }
+    
+    window.deleteSupplier = (id) => {
+        if(confirm("حذف هذا المورد؟")) {
+            suppliers = suppliers.filter(s => s.id !== id);
+            saveAllData();
+            renderSuppliers();
+            logActivity(`حذف مورد`);
+        }
+    };
+
     function renderInventory() {
         let lowStock = checkLowStock();
         let alertHtml = lowStock.length ? `<div class="alert-low">⚠️ تنبيه: نقص مخزون في: ${lowStock.map(p=>p.name).join(', ')}</div>` : '';
-        let table = `<table class="users-table"><tr><th>المنتج</th><th>الكمية</th><th>سعر البيع</th></tr>${products.map(p=>`<tr><td>${p.name}</td><td>${p.quantity}</td><td>${p.sellPrice} ج.م</td></tr>`).join('')}</table>`;
+        let table = `<table class="users-table"><tr><th>المنتج</th><th>الكمية</th><th>سعر الشراء</th><th>سعر البيع</th></tr>${products.map(p=>`<tr><td>${p.name}</td><td>${p.quantity}</td><td>${p.buyPrice} ج.م</td><td>${p.sellPrice} ج.م</td></tr>`).join('')}</table>`;
         document.getElementById('dynamicView').innerHTML = `<div class="card">${alertHtml}<h3>المخزون الحالي</h3>${table}</div>`;
     }
 
@@ -764,11 +1079,13 @@
         let totalSales = sales.reduce((s,i)=>s+i.total,0);
         let totalExpenses = expenses.reduce((s,i)=>s+i.amount,0);
         let totalPurchaseCost = products.reduce((s,p)=>s+(p.buyPrice*p.quantity),0);
+        let totalPurchasesValue = purchases.reduce((s,p)=>s+p.total,0);
         let netProfit = totalSales - totalExpenses - totalPurchaseCost;
         document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>تقرير الأرباح</h3>
         <p>إجمالي المبيعات: ${totalSales} ج.م</p>
+        <p>إجمالي المشتريات: ${totalPurchasesValue} ج.م</p>
         <p>إجمالي المصروفات: ${totalExpenses} ج.م</p>
-        <p>تكلفة المخزون: ${totalPurchaseCost} ج.م</p>
+        <p>قيمة المخزون الحالي: ${totalPurchaseCost} ج.م</p>
         <h2 style="color:var(--success)">صافي الربح: ${netProfit} ج.م</h2></div>`;
     }
 
@@ -788,9 +1105,22 @@
             let file = document.getElementById('importFile').files[0];
             if(!file) return;
             let reader = new FileReader();
-            reader.onload = (e) => { let data = JSON.parse(e.target.result); 
-                Object.assign(products, data.products); Object.assign(sales, data.sales); 
-                Object.assign(users, data.users); saveAllData(); alert("تم الاسترجاع"); location.reload(); };
+            reader.onload = (e) => { 
+                let data = JSON.parse(e.target.result); 
+                products = data.products || [];
+                sales = data.sales || [];
+                purchases = data.purchases || [];
+                expenses = data.expenses || [];
+                installments = data.installments || [];
+                returns = data.returns || [];
+                damages = data.damages || [];
+                suppliers = data.suppliers || [];
+                users = data.users || [];
+                userActivityLog = data.userActivityLog || [];
+                saveAllData(); 
+                alert("تم الاسترجاع بنجاح"); 
+                location.reload(); 
+            };
             reader.readAsText(file);
         };
     }
@@ -829,14 +1159,13 @@
         `;
         document.getElementById('dynamicView').innerHTML = html;
         
-        // عرض المستخدمين
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '';
         users.forEach((user, index) => {
             let row = tbody.insertRow();
             row.innerHTML = `
-                <td>${user.username}</td>
-                <td>${user.role}</td>
+                <td>${user.username}数量
+                <td>${user.role}数量
                 <td>${user.lastLogin || 'لم يسجل بعد'}数量
                 <td>
                     <button class="btn-small" onclick="editUser('${user.username}')"><i class="fas fa-edit"></i> تعديل</button>
@@ -845,7 +1174,6 @@
             `;
         });
         
-        // إضافة مستخدم جديد
         document.getElementById('addNewUserBtn').onclick = () => {
             verifyAdmin((isAdmin) => {
                 if (isAdmin) {
@@ -875,7 +1203,6 @@
         };
     }
     
-    // تعديل المستخدم
     window.editUser = (username) => {
         verifyAdmin((isAdmin) => {
             if (isAdmin) {
@@ -909,7 +1236,6 @@
         });
     };
     
-    // حذف مستخدم
     window.deleteUser = (username) => {
         if (username === 'admin') {
             alert("لا يمكن حذف المستخدم المدير الرئيسي!");
@@ -938,19 +1264,14 @@
         };
         
         document.getElementById('loginUsername').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('doLoginBtn').click();
-            }
+            if (e.key === 'Enter') document.getElementById('doLoginBtn').click();
         });
         
         document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('doLoginBtn').click();
-            }
+            if (e.key === 'Enter') document.getElementById('doLoginBtn').click();
         });
         
         document.getElementById('logoutBtn').onclick = () => logout();
-        
         document.getElementById('confirmYesBtn').onclick = () => checkAdminCredentials();
         document.getElementById('confirmNoBtn').onclick = () => closeModal();
         
@@ -968,11 +1289,9 @@
         document.getElementById('cancelChangePassBtn').onclick = () => closeChangePasswordModal();
     }
 
-    // بدء التشغيل
     initializeUsers();
     initEventListeners();
     
-    // التحقق من وجود جلسة سابقة
     const savedSession = sessionStorage.getItem('currentSession');
     if (savedSession) {
         const sessionData = JSON.parse(savedSession);
