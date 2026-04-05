@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hana Store</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0d1b2a;
+  color: white;
+  margin: 0;
+}
+
+header {
+  background: #1b3a57;
+  padding: 15px;
+  text-align: center;
+  font-size: 22px;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav button {
+  width: 33.33%;
+  padding: 10px;
+  background: #1e6091;
+  border: none;
+  color: white;
+}
+
+section {
+  padding: 10px;
+}
+
+input, select, button {
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  background: #1e6091;
+  color: white;
+}
+
+.card {
+  background: #1b3a57;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<header>Hana Store 💙</header>
+
+<nav>
+  <button onclick="show('products')">المنتجات</button>
+  <button onclick="show('customers')">العملاء</button>
+  <button onclick="show('sales')">المبيعات</button>
+  <button onclick="show('purchases')">المشتريات</button>
+  <button onclick="show('damaged')">التوالف</button>
+  <button onclick="show('installments')">التقسيط</button>
+</nav>
+
+<section id="app"></section>
+
+<script>
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let customers = JSON.parse(localStorage.getItem("customers")) || [];
+let sales = JSON.parse(localStorage.getItem("sales")) || [];
+let purchases = JSON.parse(localStorage.getItem("purchases")) || [];
+let damaged = JSON.parse(localStorage.getItem("damaged")) || [];
+let installments = JSON.parse(localStorage.getItem("installments")) || [];
+
+let cart = [];
+
+function save() {
+  localStorage.setItem("products", JSON.stringify(products));
+  localStorage.setItem("customers", JSON.stringify(customers));
+  localStorage.setItem("sales", JSON.stringify(sales));
+  localStorage.setItem("purchases", JSON.stringify(purchases));
+  localStorage.setItem("damaged", JSON.stringify(damaged));
+  localStorage.setItem("installments", JSON.stringify(installments));
+}
+
+// ================= UI =================
+function show(type) {
+  let app = document.getElementById("app");
+
+  // PRODUCTS
+  if (type === "products") {
+    app.innerHTML = `
+      <h3>📦 المنتجات</h3>
+      <input id="pName" placeholder="اسم المنتج">
+      <input id="pQty" type="number" placeholder="الكمية">
+      <input id="pPrice" type="number" placeholder="السعر">
+      <button onclick="addProduct()">إضافة</button>
+
+      ${products.map((p,i)=>`
+        <div class="card">
+          ${p.name} - ${p.qty} - ${p.price}
+          <button onclick="deleteProduct(${i})">حذف</button>
+        </div>
+      `).join("")}
+    `;
+  }
+
+  // CUSTOMERS
+  if (type === "customers") {
+    app.innerHTML = `
+      <h3>👤 العملاء</h3>
+      <input id="cName" placeholder="الاسم">
+      <input id="cPhone" placeholder="الهاتف">
+      <button onclick="addCustomer()">إضافة</button>
+
+      ${customers.map(c=>`
+        <div class="card">${c.name} - ${c.phone}</div>
+      `).join("")}
+    `;
+  }
+
+  // SALES (INVOICE)
+  if (type === "sales") {
+    app.innerHTML = `
+      <h3>🧾 فاتورة بيع</h3>
+
+      <select id="saleProduct">
+        ${products.map((p,i)=> `<option value="${i}">${p.name} (المخزون: ${p.qty})</option>`).join("")
