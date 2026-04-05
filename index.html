@@ -6,56 +6,14 @@
 <title>Hana Store</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #0d1b2a;
-  color: white;
-  margin: 0;
-}
-
-header {
-  background: #1b3a57;
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-}
-
-nav {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-nav button {
-  width: 33.33%;
-  padding: 10px;
-  background: #1e6091;
-  border: none;
-  color: white;
-}
-
-section {
-  padding: 10px;
-}
-
-input, select, button {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  border-radius: 5px;
-  border: none;
-}
-
-button {
-  background: #1e6091;
-  color: white;
-}
-
-.card {
-  background: #1b3a57;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 8px;
-}
+body {font-family: Arial; background:#0d1b2a; color:white; margin:0;}
+header {background:#1b3a57; padding:15px; text-align:center;}
+nav {display:flex; flex-wrap:wrap;}
+nav button {width:33.33%; padding:10px; background:#1e6091; border:none; color:white;}
+section {padding:10px;}
+input,select,button {padding:10px; margin:5px 0; width:100%; border-radius:5px; border:none;}
+button {background:#1e6091;}
+.card {background:#1b3a57; padding:10px; margin:5px 0; border-radius:8px;}
 </style>
 </head>
 
@@ -64,12 +22,12 @@ button {
 <header>Hana Store 💙</header>
 
 <nav>
-  <button onclick="show('products')">المنتجات</button>
-  <button onclick="show('customers')">العملاء</button>
-  <button onclick="show('sales')">المبيعات</button>
-  <button onclick="show('purchases')">المشتريات</button>
-  <button onclick="show('damaged')">التوالف</button>
-  <button onclick="show('installments')">التقسيط</button>
+<button onclick="show('products')">المنتجات</button>
+<button onclick="show('customers')">العملاء</button>
+<button onclick="show('sales')">المبيعات</button>
+<button onclick="show('purchases')">المشتريات</button>
+<button onclick="show('damaged')">التوالف</button>
+<button onclick="show('installments')">التقسيط</button>
 </nav>
 
 <section id="app"></section>
@@ -81,154 +39,225 @@ let sales = JSON.parse(localStorage.getItem("sales")) || [];
 let purchases = JSON.parse(localStorage.getItem("purchases")) || [];
 let damaged = JSON.parse(localStorage.getItem("damaged")) || [];
 let installments = JSON.parse(localStorage.getItem("installments")) || [];
-
 let cart = [];
 
-function save() {
-  localStorage.setItem("products", JSON.stringify(products));
-  localStorage.setItem("customers", JSON.stringify(customers));
-  localStorage.setItem("sales", JSON.stringify(sales));
-  localStorage.setItem("purchases", JSON.stringify(purchases));
-  localStorage.setItem("damaged", JSON.stringify(damaged));
-  localStorage.setItem("installments", JSON.stringify(installments));
+function save(){
+localStorage.setItem("products",JSON.stringify(products));
+localStorage.setItem("customers",JSON.stringify(customers));
+localStorage.setItem("sales",JSON.stringify(sales));
+localStorage.setItem("purchases",JSON.stringify(purchases));
+localStorage.setItem("damaged",JSON.stringify(damaged));
+localStorage.setItem("installments",JSON.stringify(installments));
 }
 
 // ================= UI =================
-function show(type) {
-  let app = document.getElementById("app");
+function show(type){
+let app=document.getElementById("app");
 
-  // PRODUCTS
-  if (type === "products") {
-    app.innerHTML = `
-      <h3>📦 المنتجات</h3>
-      <input id="pName" placeholder="اسم المنتج">
-      <input id="pQty" type="number" placeholder="الكمية">
-      <input id="pPrice" type="number" placeholder="السعر">
-      <button onclick="addProduct()">إضافة</button>
+// PRODUCTS
+if(type==="products"){
+app.innerHTML=`
+<h3>📦 المنتجات</h3>
+<input id="pName" placeholder="اسم المنتج">
+<input id="pQty" type="number" placeholder="الكمية">
+<input id="pPrice" type="number" placeholder="السعر">
+<button onclick="addProduct()">إضافة</button>
 
-      ${products.map((p,i)=>`
-        <div class="card">
-          ${p.name} - ${p.qty} - ${p.price}
-          <button onclick="deleteProduct(${i})">حذف</button>
-        </div>
-      `).join("")}
-    `;
-  }
-
-  // CUSTOMERS
-  if (type === "customers") {
-    app.innerHTML = `
-      <h3>👤 العملاء</h3>
-      <input id="cName" placeholder="الاسم">
-      <input id="cPhone" placeholder="الهاتف">
-      <button onclick="addCustomer()">إضافة</button>
-
-      ${customers.map(c=>`
-        <div class="card">${c.name} - ${c.phone}</div>
-      `).join("")}
-    `;
-  }
-
-  // SALES
-  if (type === "sales") {
-    app.innerHTML = `
-      <h3>🧾 فاتورة بيع</h3>
-
-      <select id="saleProduct">
-        ${products.map((p,i)=> `<option value="${i}">${p.name} (المخزون: ${p.qty})</option>`).join("")}
-      </select>
-
-      <input id="saleQty" type="number" placeholder="الكمية">
-      <button onclick="addToCart()">إضافة للسلة</button>
-
-      <div id="cart"></div>
-      <button onclick="checkout()">إتمام البيع</button>
-    `;
-
-    renderCart();
-  }
+${products.map((p,i)=>`
+<div class="card">
+${p.name} - ${p.qty} - ${p.price}
+<button onclick="deleteProduct(${i})">حذف</button>
+</div>`).join("")}
+`;
 }
 
-// ================= PRODUCTS =================
-function addProduct() {
-  let name = document.getElementById("pName").value;
-  let qty = parseInt(document.getElementById("pQty").value);
-  let price = parseFloat(document.getElementById("pPrice").value);
+// CUSTOMERS
+if(type==="customers"){
+app.innerHTML=`
+<h3>👤 العملاء</h3>
+<input id="cName" placeholder="الاسم">
+<input id="cPhone" placeholder="الهاتف">
+<button onclick="addCustomer()">إضافة</button>
 
-  if (!name || !qty || !price) return;
-
-  products.push({ name, qty, price });
-  save();
-  show("products");
+${customers.map(c=>`
+<div class="card">${c.name} - ${c.phone}</div>`).join("")}
+`;
 }
 
-function deleteProduct(i) {
-  products.splice(i,1);
-  save();
-  show("products");
+// SALES
+if(type==="sales"){
+app.innerHTML=`
+<h3>🧾 فاتورة بيع</h3>
+
+<select id="saleProduct">
+${products.map((p,i)=>`<option value="${i}">${p.name} (${p.qty})</option>`).join("")}
+</select>
+
+<input id="saleQty" type="number" placeholder="الكمية">
+<button onclick="addToCart()">إضافة</button>
+
+<div id="cart"></div>
+<button onclick="checkout()">إتمام البيع</button>
+`;
+renderCart();
 }
 
-// ================= CUSTOMERS =================
-function addCustomer() {
-  let name = document.getElementById("cName").value;
-  let phone = document.getElementById("cPhone").value;
+// PURCHASES
+if(type==="purchases"){
+app.innerHTML=`
+<h3>🛒 المشتريات</h3>
 
-  if (!name || !phone) return;
+<input id="buyName" placeholder="اسم المنتج">
+<input id="buyQty" type="number" placeholder="الكمية">
+<input id="buyPrice" type="number" placeholder="السعر">
 
-  customers.push({ name, phone });
-  save();
-  show("customers");
+<button onclick="addPurchase()">إضافة</button>
+
+${purchases.map(p=>`
+<div class="card">${p.name} - ${p.qty}</div>`).join("")}
+`;
 }
 
-// ================= CART =================
-function addToCart() {
-  let index = document.getElementById("saleProduct").value;
-  let qty = parseInt(document.getElementById("saleQty").value);
+// DAMAGED
+if(type==="damaged"){
+app.innerHTML=`
+<h3>⚠️ التوالف</h3>
 
-  if (!products[index] || qty <= 0) return;
+<select id="damagedProduct">
+${products.map((p,i)=>`<option value="${i}">${p.name}</option>`).join("")}
+</select>
 
-  cart.push({
-    productIndex: index,
-    name: products[index].name,
-    qty: qty,
-    price: products[index].price
-  });
+<input id="damagedQty" type="number" placeholder="الكمية">
+<button onclick="addDamaged()">تسجيل</button>
 
-  renderCart();
+${damaged.map(d=>`
+<div class="card">${d.name} - ${d.qty}</div>`).join("")}
+`;
 }
 
-function renderCart() {
-  let div = document.getElementById("cart");
-  if (!div) return;
+// INSTALLMENTS
+if(type==="installments"){
+app.innerHTML=`
+<h3>💳 التقسيط</h3>
 
-  div.innerHTML = cart.map((item,i)=>`
-    <div class="card">
-      ${item.name} - ${item.qty} × ${item.price}
-      <button onclick="removeFromCart(${i})">❌</button>
-    </div>
-  `).join("");
+<input id="instName" placeholder="اسم العميل">
+<input id="instAmount" type="number" placeholder="المبلغ">
+<input id="instPaid" type="number" placeholder="المدفوع">
+
+<button onclick="addInstallment()">إضافة</button>
+
+${installments.map(i=>`
+<div class="card">${i.name} - المتبقي: ${i.amount - i.paid}</div>`).join("")}
+`;
 }
 
-function removeFromCart(i) {
-  cart.splice(i,1);
-  renderCart();
 }
 
-function checkout() {
-  cart.forEach(item => {
-    products[item.productIndex].qty -= item.qty;
-  });
+// ================= FUNCTIONS =================
 
-  sales.push({ items: cart, date: new Date() });
-  cart = [];
-
-  save();
-  alert("تم البيع بنجاح ✅");
-  show("sales");
+// منتجات
+function addProduct(){
+let n=pName.value;
+let q=parseInt(pQty.value);
+let p=parseFloat(pPrice.value);
+if(!n||q<=0||p<=0)return;
+products.push({name:n,qty:q,price:p});
+save(); show("products");
 }
 
-// default view
+function deleteProduct(i){
+products.splice(i,1);
+save(); show("products");
+}
+
+// عملاء
+function addCustomer(){
+let n=cName.value;
+let ph=cPhone.value;
+if(!n||!ph)return;
+customers.push({name:n,phone:ph});
+save(); show("customers");
+}
+
+// سلة
+function addToCart(){
+let i=saleProduct.value;
+let q=parseInt(saleQty.value);
+if(!products[i]||q<=0)return;
+if(q>products[i].qty){alert("المخزون لا يكفي");return;}
+
+cart.push({productIndex:i,name:products[i].name,qty:q,price:products[i].price});
+renderCart();
+}
+
+function renderCart(){
+let div=document.getElementById("cart");
+if(!div)return;
+let total=0;
+
+div.innerHTML=cart.map((c,i)=>{
+total+=c.qty*c.price;
+return `<div class="card">${c.name} - ${c.qty} × ${c.price}
+<button onclick="removeFromCart(${i})">❌</button></div>`;
+}).join("");
+
+div.innerHTML+=`<h3>الإجمالي: ${total}</h3>`;
+}
+
+function removeFromCart(i){
+cart.splice(i,1);
+renderCart();
+}
+
+function checkout(){
+for(let c of cart){
+if(products[c.productIndex].qty<c.qty){
+alert("المخزون غير كافي");return;
+}
+products[c.productIndex].qty-=c.qty;
+}
+sales.push(cart);
+cart=[];
+save();
+alert("تم البيع");
+show("sales");
+}
+
+// مشتريات
+function addPurchase(){
+let n=buyName.value;
+let q=parseInt(buyQty.value);
+let p=parseFloat(buyPrice.value);
+if(!n||q<=0||p<=0)return;
+purchases.push({name:n,qty:q});
+products.push({name:n,qty:q,price:p});
+save(); show("purchases");
+}
+
+// توالف
+function addDamaged(){
+let i=damagedProduct.value;
+let q=parseInt(damagedQty.value);
+if(!products[i]||q<=0)return;
+if(q>products[i].qty){alert("كمية غير متاحة");return;}
+products[i].qty-=q;
+damaged.push({name:products[i].name,qty:q});
+save(); show("damaged");
+}
+
+// تقسيط
+function addInstallment(){
+let n=instName.value;
+let a=parseFloat(instAmount.value);
+let p=parseFloat(instPaid.value);
+if(!n||a<=0||p<0)return;
+installments.push({name:n,amount:a,paid:p});
+save(); show("installments");
+}
+
+// تشغيل
 show("products");
+
 </script>
 
 </body>
