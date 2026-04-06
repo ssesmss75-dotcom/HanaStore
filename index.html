@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Hana Store - نظام المحاسبة المتكامل مع الصيانة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -28,6 +27,7 @@
             --light-gray: #ecf0f1;
         }
         
+        /* شاشة تسجيل الدخول */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -48,17 +48,8 @@
             max-width: 400px;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            animation: fadeInUp 0.5s ease;
         }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .login-card h2 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-        }
+        .login-card h2 { color: var(--primary); margin-bottom: 10px; font-size: 1.8rem; }
         .login-input {
             width: 100%;
             padding: 12px 15px;
@@ -67,10 +58,7 @@
             border-radius: 25px;
             font-size: 1rem;
         }
-        .login-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+        .login-input:focus { outline: none; border-color: var(--primary); }
         .login-btn {
             width: 100%;
             padding: 12px;
@@ -83,23 +71,11 @@
             cursor: pointer;
             margin-top: 20px;
         }
-        .login-btn:hover {
-            background: var(--primary-light);
-        }
-        .login-error {
-            color: var(--danger);
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-        .login-info {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #999;
-            text-align: right;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
+        .login-btn:hover { background: var(--primary-light); }
+        .login-error { color: var(--danger); margin-top: 15px; font-size: 0.9rem; }
+        .login-info { margin-top: 20px; font-size: 0.8rem; color: #999; text-align: right; border-top: 1px solid #eee; padding-top: 15px; }
         
+        /* النوافذ المنبثقة */
         .modal {
             display: none;
             position: fixed;
@@ -120,7 +96,6 @@
             max-width: 500px;
             max-height: 80vh;
             overflow-y: auto;
-            text-align: center;
         }
         .modal-content input, .modal-content select, .modal-content textarea {
             width: 100%;
@@ -129,48 +104,14 @@
             border: 1px solid #ddd;
             border-radius: 10px;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        .close-modal {
-            cursor: pointer;
-            font-size: 24px;
-            color: var(--danger);
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .modal-buttons button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; }
+        .close-modal { cursor: pointer; font-size: 24px; color: var(--danger); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; }
+        .change-password-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10002; justify-content: center; align-items: center; }
         
-        .change-password-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 10002;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .main-app {
-            display: none;
-        }
+        /* الواجهة الرئيسية */
+        .main-app { display: none; }
         .top-bar {
             background: var(--primary);
             color: white;
@@ -189,20 +130,9 @@
             padding: 5px 15px;
             border-radius: 30px;
         }
-        .user-panel span {
-            font-size: 0.9rem;
-        }
-        .last-login {
-            font-size: 0.7rem;
-            color: #ffd700;
-            margin-right: 10px;
-        }
-        .dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            padding: 20px;
-            gap: 20px;
-        }
+        .user-panel span { font-size: 0.9rem; }
+        .last-login { font-size: 0.7rem; color: #ffd700; margin-right: 10px; }
+        .dashboard { display: flex; flex-wrap: wrap; padding: 20px; gap: 20px; }
         .sidebar {
             flex: 1;
             min-width: 220px;
@@ -222,22 +152,26 @@
             font-size: 1rem;
             border-radius: 40px;
             cursor: pointer;
-            transition: 0.2s;
             font-weight: bold;
         }
         .sidebar button i { margin-left: 12px; }
-        .sidebar button:hover {
-            background: var(--primary);
-            color: white;
-        }
+        .sidebar button:hover { background: var(--primary); color: white; }
+        
+        /* منطقة المحتوى */
         .content-area {
             flex: 4;
             background: white;
             border-radius: 20px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            min-height: 70vh;
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
+        
+        /* البطاقات */
         .card {
             background: white;
             border-radius: 16px;
@@ -245,9 +179,16 @@
             margin-bottom: 20px;
             border: 1px solid #ddd;
         }
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select, button.submit-btn {
+        input, select, button.submit-btn, textarea {
             width: 100%;
             padding: 10px;
             border-radius: 12px;
@@ -269,41 +210,45 @@
             cursor: pointer;
             margin: 2px;
             font-size: 0.8rem;
+            display: inline-block;
         }
         .btn-danger { background: var(--danger); }
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); }
         .btn-info { background: var(--info); }
         
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .users-table th, .users-table td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        .users-table th {
-            background: var(--primary);
-            color: white;
-        }
-        .users-table tr:hover {
-            background: #f5f5f5;
+        /* حاويات التمرير */
+        .scroll-container {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 5px;
         }
         
-        .alert-low {
-            background: #ffeaa7;
-            color: #d63031;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+        /* بطاقات المنتجات */
+        .product-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+        .product-card.low-stock { background: #fff5f0; border-right: 4px solid #d63031; }
+        .product-card.normal { border-right: 4px solid var(--primary); }
+        
+        /* بطاقات المبيعات والمشتريات */
+        .sale-card, .purchase-card, .expense-card, .installment-card, .return-card, .damage-card, .supplier-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e0e0e0;
         }
         
-        /* ستايلات الصيانة */
+        /* إحصائيات الصيانة */
         .repair-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -314,12 +259,20 @@
             border-radius: 15px;
             text-align: center;
         }
-        .repair-stat-card i { font-size: 28px; margin-bottom: 8px; }
         .repair-stat-card .value { font-size: 24px; font-weight: bold; }
         .repair-stat-card .label { font-size: 12px; opacity: 0.9; }
+        
+        /* بطاقات الصيانة */
+        .repair-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e0e0e0;
+        }
         .status-badge {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: bold;
@@ -329,33 +282,32 @@
         .status-waiting { background: #fdcb6e; color: #e17055; }
         .status-completed { background: #55efc4; color: #00b894; }
         .status-delivered { background: #81ecec; color: #00cec9; }
-        .status-unfixable { background: #fab1a0; color: #d63031; }
-        .search-filter-bar {
+        
+        .search-bar {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        .search-filter-bar input, .search-filter-bar select {
+        .search-bar input, .search-bar select {
             padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 10px;
             flex: 1;
-            min-width: 150px;
+            min-width: 120px;
         }
-        .repair-actions {
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .repair-actions button { padding: 4px 8px; font-size: 11px; }
         
+        /* استجابة للجوال */
         @media (max-width: 768px) {
             .dashboard { flex-direction: column; }
             .sidebar { display: flex; flex-wrap: wrap; gap: 8px; }
-            .sidebar button { width: auto; flex: 1; font-size: 0.8rem; padding: 8px; }
-            .users-table th, .users-table td { padding: 8px; font-size: 0.75rem; }
+            .sidebar button { width: auto; flex: 1; font-size: 0.7rem; padding: 8px; }
+            .content-area { min-height: 450px; padding: 12px; }
+            .card { padding: 12px; }
+            .btn-small { padding: 4px 8px; font-size: 0.65rem; }
+            .repair-stats { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
+            .repair-stat-card .value { font-size: 18px; }
+            .repair-stat-card .label { font-size: 9px; }
         }
     </style>
 </head>
@@ -371,8 +323,7 @@
         <button class="login-btn" id="doLoginBtn"><i class="fas fa-sign-in-alt"></i> دخول</button>
         <div id="loginError" class="login-error"></div>
         <div class="login-info">
-            <i class="fas fa-info-circle"></i> بيانات الدخول:
-            <div>📌 admin / admin123 (مدير)</div>
+            <i class="fas fa-info-circle"></i> بيانات الدخول: 📌 admin / admin123 (مدير)
         </div>
     </div>
 </div>
@@ -426,7 +377,7 @@
             <div class="form-group"><label>قطع الغيار</label><textarea id="editUsedParts" rows="2"></textarea></div>
             <div class="form-group"><label>الحالة</label><select id="editRepairStatus"><option value="قيد الانتظار">⏳ قيد الانتظار</option><option value="قيد الإصلاح">🔧 قيد الإصلاح</option><option value="بانتظار قطع غيار">📦 بانتظار قطع غيار</option><option value="تم الإصلاح">✅ تم الإصلاح</option><option value="تم التسليم">🚀 تم التسليم</option><option value="غير قابل للإصلاح">❌ غير قابل للإصلاح</option></select></div>
             <div class="form-group"><label>ملاحظات</label><textarea id="editNotes" rows="2"></textarea></div>
-            <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-save"></i> حفظ التعديلات</button>
+            <button type="submit" class="submit-btn">💾 حفظ التعديلات</button>
         </form>
     </div>
 </div>
@@ -470,7 +421,6 @@
     let pendingAction = null;
     let currentSessionId = null;
 
-    // الأقسام
     const sections = [
         { id: 'products', name: '📦 المنتجات', roles: ['مدير', 'كاشير', 'مخزن'] },
         { id: 'sales', name: '🧾 المبيعات', roles: ['مدير', 'كاشير'] },
@@ -488,25 +438,17 @@
         { id: 'logs', name: '📋 سجل النشاط', roles: ['مدير'] }
     ];
 
-    // تهيئة المستخدمين
     function initializeUsers() {
-        const defaultUsers = [
-            { username: "admin", password: "admin123", role: "مدير", lastLogin: null }
-        ];
+        const defaultUsers = [{ username: "admin", password: "admin123", role: "مدير", lastLogin: null }];
         const storedUsers = localStorage.getItem('hana_users');
         if (!storedUsers) {
             localStorage.setItem('hana_users', JSON.stringify(defaultUsers));
             users = defaultUsers;
         } else {
             users = JSON.parse(storedUsers);
-            users.forEach(user => {
-                if (!user.hasOwnProperty('lastLogin')) {
-                    user.lastLogin = null;
-                }
-            });
+            users.forEach(user => { if (!user.hasOwnProperty('lastLogin')) user.lastLogin = null; });
             localStorage.setItem('hana_users', JSON.stringify(users));
-            const hasAdmin = users.some(u => u.username === "admin");
-            if (!hasAdmin) {
+            if (!users.some(u => u.username === "admin")) {
                 users.push({ username: "admin", password: "admin123", role: "مدير", lastLogin: null });
                 localStorage.setItem('hana_users', JSON.stringify(users));
             }
@@ -538,21 +480,14 @@
         document.getElementById('changePassError').innerText = '';
     }
 
-    function closeRepairEditModal() {
-        document.getElementById('repairEditModal').style.display = 'none';
-    }
+    function closeRepairEditModal() { document.getElementById('repairEditModal').style.display = 'none'; }
 
     function checkAdminCredentials() {
         const username = document.getElementById('confirmAdminUser').value;
         const password = document.getElementById('confirmAdminPass').value;
         const adminUser = users.find(u => u.role === "مدير" && u.username === username && u.password === password);
-        
-        if (adminUser) {
-            closeModal();
-            if (pendingAction) pendingAction(true);
-        } else {
-            document.getElementById('confirmError').innerText = '❌ بيانات المدير غير صحيحة';
-        }
+        if (adminUser) { closeModal(); if (pendingAction) pendingAction(true); }
+        else { document.getElementById('confirmError').innerText = '❌ بيانات المدير غير صحيحة'; }
     }
 
     function login(username, password) {
@@ -561,24 +496,12 @@
             currentUser = user;
             user.lastLogin = new Date().toLocaleString();
             localStorage.setItem('hana_users', JSON.stringify(users));
-            
             currentSessionId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            sessionStorage.setItem('currentSession', JSON.stringify({
-                userId: user.username,
-                sessionId: currentSessionId,
-                loginTime: new Date().toISOString()
-            }));
-            
+            sessionStorage.setItem('currentSession', JSON.stringify({ userId: user.username, sessionId: currentSessionId, loginTime: new Date().toISOString() }));
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('currentUserDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
-            
-            if (user.lastLogin) {
-                document.getElementById('lastLoginDisplay').innerHTML = `🕒 آخر دخول: ${user.lastLogin}`;
-            } else {
-                document.getElementById('lastLoginDisplay').innerHTML = `🕒 أول تسجيل دخول`;
-            }
-            
+            document.getElementById('lastLoginDisplay').innerHTML = user.lastLogin ? `🕒 آخر دخول: ${user.lastLogin}` : `🕒 أول تسجيل دخول`;
             renderSidebar();
             loadSection('products');
             logActivity(`تسجيل دخول: ${username}`);
@@ -588,41 +511,21 @@
     }
 
     function logout() {
-        if (currentUser) {
-            logActivity(`تسجيل خروج: ${currentUser.username}`);
-        }
+        if (currentUser) logActivity(`تسجيل خروج: ${currentUser.username}`);
         sessionStorage.removeItem('currentSession');
         currentUser = null;
-        currentSessionId = null;
         document.getElementById('loginOverlay').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
     }
 
     function changeMyPassword(oldPass, newPass, confirmPass) {
-        if (newPass !== confirmPass) {
-            document.getElementById('changePassError').innerText = '❌ كلمة المرور الجديدة غير متطابقة';
-            return false;
-        }
-        
-        if (currentUser.password !== oldPass) {
-            document.getElementById('changePassError').innerText = '❌ كلمة المرور الحالية غير صحيحة';
-            return false;
-        }
-        
-        if (newPass.length < 4) {
-            document.getElementById('changePassError').innerText = '❌ كلمة المرور يجب أن تكون 4 أحرف على الأقل';
-            return false;
-        }
-        
+        if (newPass !== confirmPass) { document.getElementById('changePassError').innerText = '❌ كلمة المرور الجديدة غير متطابقة'; return false; }
+        if (currentUser.password !== oldPass) { document.getElementById('changePassError').innerText = '❌ كلمة المرور الحالية غير صحيحة'; return false; }
+        if (newPass.length < 4) { document.getElementById('changePassError').innerText = '❌ كلمة المرور يجب أن تكون 4 أحرف على الأقل'; return false; }
         currentUser.password = newPass;
         const userIndex = users.findIndex(u => u.username === currentUser.username);
-        if (userIndex !== -1) {
-            users[userIndex].password = newPass;
-            localStorage.setItem('hana_users', JSON.stringify(users));
-        }
-        
+        if (userIndex !== -1) users[userIndex].password = newPass;
+        localStorage.setItem('hana_users', JSON.stringify(users));
         logActivity(`تغيير كلمة المرور للمستخدم: ${currentUser.username}`);
         closeChangePasswordModal();
         alert('✅ تم تغيير كلمة المرور بنجاح');
@@ -652,23 +555,14 @@
 
     function checkSession() {
         const session = sessionStorage.getItem('currentSession');
-        if (!session && currentUser) {
-            logout();
-            return false;
-        }
+        if (!session && currentUser) { logout(); return false; }
         if (session && currentUser) {
             const sessionData = JSON.parse(session);
-            if (sessionData.userId !== currentUser.username) {
-                logout();
-                return false;
-            }
+            if (sessionData.userId !== currentUser.username) { logout(); return false; }
         }
         return true;
     }
-
-    setInterval(() => {
-        checkSession();
-    }, 60000);
+    setInterval(() => checkSession(), 60000);
 
     function generateProductCode() { return 'PRD-' + Date.now() + '-' + Math.floor(Math.random() * 1000); }
 
@@ -680,28 +574,11 @@
         saveAllData();
     }
 
-    function updateStockAfterPurchase(itemsPurchased) {
-        itemsPurchased.forEach(purchased => {
-            let prod = products.find(p => p.code === purchased.code);
-            if (prod) { prod.quantity += purchased.qty; }
-        });
-        saveAllData();
-    }
-
-    function checkLowStock() {
-        return products.filter(p => p.quantity <= 5);
-    }
+    function checkLowStock() { return products.filter(p => p.quantity <= 5); }
 
     function printInvoice(invoiceData) {
         let printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html dir="rtl"><head><title>فاتورة Hana Store</title></head>
-            <body style="font-family:Arial; padding:20px"><h2>Hana Store</h2>
-            <p>التاريخ: ${new Date().toLocaleString()}</p>
-            <table border="1" cellpadding="5"><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>
-            ${invoiceData.items.map(i => `<tr><td style="padding:8px">${i.name}</td><td style="padding:8px">${i.qty}</td><td style="padding:8px">${i.price}</td><td style="padding:8px">${i.total}</td></tr>`).join('')}
-            </table><h3>الإجمالي: ${invoiceData.total} جنيه</h3></body></html>
-        `);
+        printWindow.document.write(`<html dir="rtl"><head><title>فاتورة Hana Store</title></head><body style="font-family:Arial; padding:20px"><h2>Hana Store</h2><p>التاريخ: ${new Date().toLocaleString()}</p><table border="1" cellpadding="5"><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${invoiceData.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td>${i.total}</td></tr>`).join('')}</table><h3>الإجمالي: ${invoiceData.total} جنيه</h3></body></html>`);
         printWindow.document.close();
         printWindow.print();
     }
@@ -720,12 +597,7 @@
     }
 
     function getIcon(id) {
-        const icons = { 
-            products: 'fa-box', sales: 'fa-cart-shopping', purchases: 'fa-money-bill-wave',
-            expenses: 'fa-chart-line', installments: 'fa-calendar-alt', returns: 'fa-undo',
-            damages: 'fa-exclamation-triangle', suppliers: 'fa-truck', inventory: 'fa-warehouse',
-            repairs: 'fa-tools', users: 'fa-users', profits: 'fa-chart-line', backup: 'fa-database', logs: 'fa-history'
-        };
+        const icons = { products: 'fa-box', sales: 'fa-cart-shopping', purchases: 'fa-money-bill-wave', expenses: 'fa-chart-line', installments: 'fa-calendar-alt', returns: 'fa-undo', damages: 'fa-exclamation-triangle', suppliers: 'fa-truck', inventory: 'fa-warehouse', repairs: 'fa-tools', users: 'fa-users', profits: 'fa-chart-line', backup: 'fa-database', logs: 'fa-history' };
         return icons[id] || 'fa-folder';
     }
 
@@ -749,718 +621,606 @@
         logActivity(`فتح قسم ${sectionId}`);
     }
 
-    // ------------------------- المنتجات -------------------------
+    // ------------------------- المنتجات (بطاقات) -------------------------
     function renderProducts() {
-        let html = `<div class="card"><h3>إضافة منتج جديد</h3><form id="productForm">
-            <div class="form-group"><label>اسم المنتج</label><input type="text" id="prodName" required></div>
-            <div class="form-group"><label>سعر الشراء</label><input type="number" id="buyPrice" required></div>
-            <div class="form-group"><label>سعر البيع</label><input type="number" id="sellPrice" required></div>
-            <div class="form-group"><label>الكمية الأولية</label><input type="number" id="quantity" value="0"></div>
-            <div class="form-group"><label>الباركود (اختياري)</label><input type="text" id="barcode" placeholder="مسح الباركود"></div>
-            <button type="submit" class="submit-btn">إضافة منتج</button></form></div>
-            <div class="card"><h3>قائمة المنتجات</h3>
-            <div class="table-wrapper"><table class="users-table">
-                <thead><tr><th>الكود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>الكمية</th><th>الباركود</th><th>إجراءات</th></tr></thead>
-                <tbody id="productsTableBody"></tbody>
-            </table></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>➕ إضافة منتج جديد</h3>
+                <form id="productForm">
+                    <div class="form-group"><label>اسم المنتج</label><input type="text" id="prodName" required></div>
+                    <div class="form-group"><label>سعر الشراء</label><input type="number" id="buyPrice" required></div>
+                    <div class="form-group"><label>سعر البيع</label><input type="number" id="sellPrice" required></div>
+                    <div class="form-group"><label>الكمية الأولية</label><input type="number" id="quantity" value="0"></div>
+                    <div class="form-group"><label>الباركود</label><input type="text" id="barcode" placeholder="اختياري"></div>
+                    <button type="submit" class="submit-btn">إضافة منتج</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3>📋 قائمة المنتجات (${products.length})</h3>
+                <div class="scroll-container" id="productsContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
         
-        const tbody = document.getElementById('productsTableBody');
-        tbody.innerHTML = '';
-        products.forEach(p => {
-            let row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${p.code}数量<td>${p.name}</td><td>${p.buyPrice} ج.م</td>
-                <td>${p.sellPrice} ج.م</td><td>${p.quantity}</td><td>${p.barcode || '-'}</td>
-                <td><button class="btn-small" onclick="editProduct('${p.code}')">تعديل</button>
-                <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')">حذف</button></td>
-            `;
-        });
+        const container = document.getElementById('productsContainer');
+        container.innerHTML = '';
+        if (products.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد منتجات</div>'; }
+        else {
+            products.forEach(p => {
+                const lowStock = p.quantity <= 5;
+                const card = document.createElement('div');
+                card.className = `product-card ${lowStock ? 'low-stock' : 'normal'}`;
+                card.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:10px;">
+                        <div style="flex:3">
+                            <div style="font-size:18px;font-weight:bold;color:var(--primary);margin-bottom:8px;">
+                                ${p.name} ${lowStock ? '<span style="background:#d63031;color:white;font-size:10px;padding:2px 8px;border-radius:20px;">⚠️ منخفض</span>' : ''}
+                            </div>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;font-size:13px;">
+                                <div><span style="color:#666;">🏷️ الكود:</span> <strong>${p.code}</strong></div>
+                                <div><span style="color:#666;">💰 الشراء:</span> <strong>${p.buyPrice} ج.م</strong></div>
+                                <div><span style="color:#666;">💵 البيع:</span> <strong>${p.sellPrice} ج.م</strong></div>
+                                <div><span style="color:#666;">📦 الكمية:</span> <strong style="color:${lowStock ? '#d63031' : '#27ae60'}">${p.quantity}</strong></div>
+                                ${p.barcode ? `<div><span style="color:#666;">📱 باركود:</span> <strong>${p.barcode}</strong></div>` : ''}
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn-small" onclick="editProduct('${p.code}')"><i class="fas fa-edit"></i> تعديل</button>
+                            <button class="btn-small btn-danger" onclick="deleteProduct('${p.code}')"><i class="fas fa-trash"></i> حذف</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
         
-        document.getElementById('productForm').addEventListener('submit', (e) => {
+        document.getElementById('productForm').onsubmit = (e) => {
             e.preventDefault();
-            let newProduct = {
-                code: generateProductCode(),
-                name: document.getElementById('prodName').value,
-                buyPrice: parseFloat(document.getElementById('buyPrice').value),
-                sellPrice: parseFloat(document.getElementById('sellPrice').value),
-                quantity: parseInt(document.getElementById('quantity').value),
-                barcode: document.getElementById('barcode').value
-            };
-            products.push(newProduct);
+            products.push({ code: generateProductCode(), name: document.getElementById('prodName').value, buyPrice: parseFloat(document.getElementById('buyPrice').value), sellPrice: parseFloat(document.getElementById('sellPrice').value), quantity: parseInt(document.getElementById('quantity').value), barcode: document.getElementById('barcode').value });
             saveAllData();
             renderProducts();
-            logActivity(`إضافة منتج: ${newProduct.name}`);
-            alert("تم إضافة المنتج بنجاح");
-        });
+            logActivity(`إضافة منتج: ${document.getElementById('prodName').value}`);
+            alert("✅ تم إضافة المنتج");
+        };
     }
     
     window.editProduct = (code) => {
-        let prod = products.find(p => p.code === code);
-        let newName = prompt("اسم جديد", prod.name);
-        if (newName) prod.name = newName;
-        let newSell = prompt("سعر بيع جديد", prod.sellPrice);
-        if (newSell) prod.sellPrice = parseFloat(newSell);
-        let newBuy = prompt("سعر شراء جديد", prod.buyPrice);
-        if (newBuy) prod.buyPrice = parseFloat(newBuy);
+        let p = products.find(p => p.code === code);
+        let newName = prompt("اسم جديد", p.name); if (newName) p.name = newName;
+        let newSell = prompt("سعر بيع جديد", p.sellPrice); if (newSell) p.sellPrice = parseFloat(newSell);
+        let newBuy = prompt("سعر شراء جديد", p.buyPrice); if (newBuy) p.buyPrice = parseFloat(newBuy);
         saveAllData(); renderProducts();
     };
-    
-    window.deleteProduct = (code) => {
-        if (confirm("حذف المنتج؟")) { products = products.filter(p => p.code !== code); saveAllData(); renderProducts(); logActivity(`حذف منتج: ${code}`); }
-    };
+    window.deleteProduct = (code) => { if (confirm("حذف المنتج؟")) { products = products.filter(p => p.code !== code); saveAllData(); renderProducts(); logActivity(`حذف منتج`); } };
 
     // ------------------------- المبيعات -------------------------
     function renderSales() {
-        let html = `<div class="card"><h3>فاتورة بيع جديدة</h3>
-        <div id="productsSaleList"></div>
-        <button id="addProductToSaleBtn" class="btn-small">+ إضافة منتج</button>
-        <div><label>خصم إضافي</label><input type="number" id="discountSale" value="0"></div>
-        <div>الإجمالي: <span id="totalPreview">0</span> ج.م</div>
-        <button id="finalizeSaleBtn" class="submit-btn">حفظ الفاتورة وطباعتها</button></div>
-        <div class="card"><h3>المبيعات السابقة</h3><div id="salesHistory"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>🧾 فاتورة بيع جديدة</h3>
+                <div id="cartItems"></div>
+                <button id="addToCartBtn" class="btn-small" style="margin-bottom:10px">+ إضافة منتج</button>
+                <div class="form-group"><label>خصم</label><input type="number" id="discount" value="0"></div>
+                <div>الإجمالي: <strong id="cartTotal">0</strong> ج.م</div>
+                <button id="finalizeSaleBtn" class="submit-btn" style="margin-top:15px">💾 حفظ وطباعة</button>
+            </div>
+            <div class="card">
+                <h3>📜 المبيعات السابقة</h3>
+                <div class="scroll-container" id="salesContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
+        
         let cart = [];
-        function updateTotal() { let total = cart.reduce((sum, i) => sum + (i.price * i.qty),0) - (parseFloat(document.getElementById('discountSale')?.value)||0); document.getElementById('totalPreview').innerText = total; }
-        document.getElementById('addProductToSaleBtn').onclick = () => {
-            if(products.length === 0) { alert("لا توجد منتجات!"); return; }
-            let productSelect = `<select id="tempProductSelect">${products.map(p => `<option value="${p.code}">${p.name} - ${p.sellPrice} ج.م (متوفر:${p.quantity})</option>`).join('')}</select>
-            <input type="number" id="tempQty" placeholder="الكمية" min="1"><button id="confirmAdd" class="btn-small">إضافة</button>`;
-            let div = document.createElement('div'); div.innerHTML = productSelect; div.style.margin = "10px 0";
-            document.getElementById('productsSaleList').appendChild(div);
-            div.querySelector('#confirmAdd').onclick = () => {
-                let code = div.querySelector('#tempProductSelect').value;
-                let qty = parseInt(div.querySelector('#tempQty').value);
-                let product = products.find(p => p.code === code);
-                if(product && product.quantity >= qty){
-                    cart.push({code, name: product.name, price: product.sellPrice, qty});
-                    updateTotal();
-                    div.remove();
-                    renderCartSummary();
-                } else alert("كمية غير متوفرة");
-            };
-        };
-        function renderCartSummary() { 
-            let sumDiv = document.getElementById('productsSaleList'); 
-            let existing = sumDiv.querySelector('.cart-summary');
-            if(existing) existing.remove();
-            let listHtml = `<div class="cart-summary"><hr><strong>المنتجات المضافة:</strong><br>${cart.map(i => `${i.name} x ${i.qty} = ${i.price*i.qty} ج.م`).join('<br>')}</div>`;
-            sumDiv.insertAdjacentHTML('beforeend', listHtml);
+        function updateCartDisplay() {
+            let container = document.getElementById('cartItems');
+            let existing = document.querySelector('.cart-summary');
+            if (existing) existing.remove();
+            if (cart.length > 0) {
+                let summary = document.createElement('div');
+                summary.className = 'cart-summary';
+                summary.innerHTML = '<hr><strong>المنتجات:</strong><br>' + cart.map(i => `${i.name} x ${i.qty} = ${i.price*i.qty} ج.م`).join('<br>');
+                container.appendChild(summary);
+            }
+            let total = cart.reduce((s,i)=>s+(i.price*i.qty),0) - (parseFloat(document.getElementById('discount')?.value)||0);
+            document.getElementById('cartTotal').innerHTML = total;
         }
+        
+        document.getElementById('addToCartBtn').onclick = () => {
+            if (products.length === 0) { alert("لا توجد منتجات"); return; }
+            let div = document.createElement('div');
+            div.innerHTML = `<select id="tempProduct">${products.map(p => `<option value="${p.code}">${p.name} - ${p.sellPrice} ج.م (${p.quantity})</option>`).join('')}</select><input type="number" id="tempQty" placeholder="الكمية" min="1"><button class="btn-small" onclick="confirmAdd(this)">إضافة</button>`;
+            document.getElementById('cartItems').appendChild(div);
+        };
+        
+        window.confirmAdd = (btn) => {
+            let div = btn.parentElement;
+            let code = div.querySelector('#tempProduct').value;
+            let qty = parseInt(div.querySelector('#tempQty').value);
+            let product = products.find(p => p.code === code);
+            if (product && product.quantity >= qty) {
+                cart.push({ code, name: product.name, price: product.sellPrice, qty });
+                updateCartDisplay();
+                div.remove();
+            } else alert("كمية غير متوفرة");
+        };
+        
         document.getElementById('finalizeSaleBtn').onclick = () => {
-            if(cart.length === 0) { alert("أضف منتجات أولاً"); return; }
-            let total = cart.reduce((sum,i)=>sum+(i.price*i.qty),0) - (parseFloat(document.getElementById('discountSale').value)||0);
-            let saleRecord = { id: Date.now(), date: new Date().toLocaleString(), items: cart, total: total };
-            sales.push(saleRecord);
+            if (cart.length === 0) { alert("أضف منتجات"); return; }
+            let total = cart.reduce((s,i)=>s+(i.price*i.qty),0) - (parseFloat(document.getElementById('discount').value)||0);
+            sales.push({ id: Date.now(), date: new Date().toLocaleString(), items: [...cart], total: total });
             updateStockAfterSale(cart);
             saveAllData();
-            printInvoice({items:cart, total, paid:total, remaining:0});
+            printInvoice({ items: cart, total: total });
             renderSales();
             logActivity(`بيع بقيمة ${total}`);
-            alert(`تمت عملية البيع بنجاح بقيمة ${total} ج.م`);
+            alert(`✅ تم البيع بقيمة ${total} ج.م`);
         };
-        let historyHtml = `<table class="users-table"><tr><th>التاريخ</th><th>الإجمالي</th></tr>${sales.map(s => `<tr><td style="padding:8px">${s.date}</td><td style="padding:8px">${s.total} ج.م</td>`).join('')}</table>`;
-        document.getElementById('salesHistory').innerHTML = historyHtml;
+        
+        let salesContainer = document.getElementById('salesContainer');
+        salesContainer.innerHTML = '';
+        if (sales.length === 0) salesContainer.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد مبيعات</div>';
+        else {
+            sales.slice().reverse().forEach(s => {
+                let card = document.createElement('div');
+                card.className = 'sale-card';
+                card.innerHTML = `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;"><span>📅 ${s.date}</span><span>💰 <strong>${s.total} ج.م</strong></span></div><div style="font-size:12px;color:#666;margin-top:5px;">${s.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>`;
+                salesContainer.appendChild(card);
+            });
+        }
     }
 
     // ------------------------- المشتريات -------------------------
     function renderPurchases() {
-        let html = `<div class="card"><h3>تسجيل مشتريات جديدة</h3>
-        <div id="purchaseItemsList"></div>
-        <button id="addProductToPurchaseBtn" class="btn-small">+ إضافة منتج</button>
-        <div>إجمالي المشتريات: <span id="purchaseTotalPreview">0</span> ج.م</div>
-        <button id="finalizePurchaseBtn" class="submit-btn">تسجيل المشتريات</button></div>
-        <div class="card"><h3>سجل المشتريات</h3><div id="purchasesHistory"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>💰 تسجيل مشتريات</h3>
+                <div id="purchaseItems"></div>
+                <button id="addPurchaseBtn" class="btn-small">+ إضافة منتج</button>
+                <div>الإجمالي: <strong id="purchaseTotal">0</strong> ج.م</div>
+                <button id="finalizePurchaseBtn" class="submit-btn" style="margin-top:15px">تسجيل المشتريات</button>
+            </div>
+            <div class="card">
+                <h3>📜 سجل المشتريات</h3>
+                <div class="scroll-container" id="purchasesContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
-        let purchaseCart = [];
-        function updatePurchaseTotal() { let total = purchaseCart.reduce((sum, i) => sum + (i.buyPrice * i.qty),0); document.getElementById('purchaseTotalPreview').innerText = total; }
         
-        document.getElementById('addProductToPurchaseBtn').onclick = () => {
-            let productSelect = `<select id="tempPurchaseProductSelect"><option value="new">+ منتج جديد</option>${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select>
-            <input type="text" id="tempNewProductName" placeholder="اسم المنتج الجديد" style="display:none">
-            <input type="number" id="tempPurchaseQty" placeholder="الكمية" min="1">
-            <input type="number" id="tempPurchasePrice" placeholder="سعر الشراء">
-            <button id="confirmPurchaseAdd" class="btn-small">إضافة</button>`;
-            let div = document.createElement('div'); div.innerHTML = productSelect; div.style.margin = "10px 0";
-            document.getElementById('purchaseItemsList').appendChild(div);
-            let select = div.querySelector('#tempPurchaseProductSelect');
-            let newNameInput = div.querySelector('#tempNewProductName');
-            select.onchange = () => { newNameInput.style.display = select.value === 'new' ? 'inline-block' : 'none'; };
-            div.querySelector('#confirmPurchaseAdd').onclick = () => {
-                let code = select.value;
-                let qty = parseInt(div.querySelector('#tempPurchaseQty').value);
-                let buyPrice = parseFloat(div.querySelector('#tempPurchasePrice').value);
-                let productName = "";
-                if(code === 'new') {
-                    productName = newNameInput.value;
-                    if(!productName) { alert("أدخل اسم المنتج"); return; }
-                    let newProduct = { code: generateProductCode(), name: productName, buyPrice: buyPrice, sellPrice: buyPrice * 1.3, quantity: 0, barcode: '' };
-                    products.push(newProduct);
-                    saveAllData();
-                    code = newProduct.code;
-                } else {
-                    let existing = products.find(p => p.code === code);
-                    productName = existing.name;
-                }
-                purchaseCart.push({ code, name: productName, buyPrice, qty });
-                updatePurchaseTotal();
-                div.remove();
-                renderPurchaseSummary();
-            };
-        };
-        function renderPurchaseSummary() {
-            let sumDiv = document.getElementById('purchaseItemsList');
-            let existing = sumDiv.querySelector('.purchase-summary');
-            if(existing) existing.remove();
-            let listHtml = `<div class="purchase-summary"><hr><strong>المنتجات المضافة:</strong><br>${purchaseCart.map(i => `${i.name} x ${i.qty} = ${i.buyPrice*i.qty} ج.م`).join('<br>')}</div>`;
-            sumDiv.insertAdjacentHTML('beforeend', listHtml);
+        let purchaseCart = [];
+        function updatePurchaseDisplay() {
+            let container = document.getElementById('purchaseItems');
+            let existing = document.querySelector('.purchase-summary');
+            if (existing) existing.remove();
+            if (purchaseCart.length > 0) {
+                let summary = document.createElement('div');
+                summary.className = 'purchase-summary';
+                summary.innerHTML = '<hr><strong>المنتجات:</strong><br>' + purchaseCart.map(i => `${i.name} x ${i.qty} = ${i.buyPrice*i.qty} ج.م`).join('<br>');
+                container.appendChild(summary);
+            }
+            document.getElementById('purchaseTotal').innerHTML = purchaseCart.reduce((s,i)=>s+(i.buyPrice*i.qty),0);
         }
+        
+        document.getElementById('addPurchaseBtn').onclick = () => {
+            let div = document.createElement('div');
+            div.innerHTML = `<input type="text" id="newProdName" placeholder="اسم المنتج"><input type="number" id="newProdPrice" placeholder="سعر الشراء"><input type="number" id="newProdQty" placeholder="الكمية"><button class="btn-small" onclick="confirmPurchaseAdd(this)">إضافة</button>`;
+            document.getElementById('purchaseItems').appendChild(div);
+        };
+        
+        window.confirmPurchaseAdd = (btn) => {
+            let div = btn.parentElement;
+            let name = div.querySelector('#newProdName').value;
+            let price = parseFloat(div.querySelector('#newProdPrice').value);
+            let qty = parseInt(div.querySelector('#newProdQty').value);
+            if (name && price && qty) {
+                purchaseCart.push({ name, buyPrice: price, qty });
+                updatePurchaseDisplay();
+                div.remove();
+            } else alert("املأ الحقول");
+        };
+        
         document.getElementById('finalizePurchaseBtn').onclick = () => {
-            if(purchaseCart.length === 0) { alert("أضف منتجات أولاً"); return; }
-            let total = purchaseCart.reduce((sum,i)=>sum+(i.buyPrice*i.qty),0);
-            let purchaseRecord = { id: Date.now(), date: new Date().toLocaleString(), items: purchaseCart, total: total };
-            purchases.push(purchaseRecord);
+            if (purchaseCart.length === 0) { alert("أضف منتجات"); return; }
+            let total = purchaseCart.reduce((s,i)=>s+(i.buyPrice*i.qty),0);
+            purchases.push({ id: Date.now(), date: new Date().toLocaleString(), items: [...purchaseCart], total: total });
             purchaseCart.forEach(item => {
-                let product = products.find(p => p.code === item.code);
-                if(product) { product.quantity += item.qty; }
+                let existing = products.find(p => p.name === item.name);
+                if (existing) existing.quantity += item.qty;
+                else products.push({ code: generateProductCode(), name: item.name, buyPrice: item.buyPrice, sellPrice: item.buyPrice * 1.3, quantity: item.qty, barcode: '' });
             });
             saveAllData();
-            logActivity(`شراء بقيمة ${total}`);
-            alert(`تم تسجيل المشتريات بنجاح بقيمة ${total} ج.م`);
+            purchaseCart = [];
             renderPurchases();
+            logActivity(`شراء بقيمة ${total}`);
+            alert(`✅ تم تسجيل المشتريات بقيمة ${total} ج.م`);
         };
-        let historyHtml = `<table class="users-table"><tr><th>التاريخ</th><th>الإجمالي</th><tr>${purchases.map(p => `<td>${p.date}</td><td>${p.total} ج.م</td></tr>`).join('')}</tr>`;
-        document.getElementById('purchasesHistory').innerHTML = historyHtml;
+        
+        let purchasesContainer = document.getElementById('purchasesContainer');
+        purchasesContainer.innerHTML = '';
+        if (purchases.length === 0) purchasesContainer.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد مشتريات</div>';
+        else {
+            purchases.slice().reverse().forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'purchase-card';
+                card.innerHTML = `<div style="display:flex;justify-content:space-between;"><span>📅 ${p.date}</span><span>💰 <strong>${p.total} ج.م</strong></span></div>`;
+                purchasesContainer.appendChild(card);
+            });
+        }
     }
 
     // ------------------------- المصروفات -------------------------
     function renderExpenses() {
-        let html = `<div class="card"><h3>تسجيل مصروف جديد</h3>
-        <div class="form-group"><label>نوع المصروف</label><input type="text" id="expenseType" placeholder="مثال: إيجار - كهرباء - رواتب"></div>
-        <div class="form-group"><label>المبلغ</label><input type="number" id="expenseAmount"></div>
-        <div class="form-group"><label>ملاحظات</label><textarea id="expenseNote" rows="2"></textarea></div>
-        <button id="addExpenseBtn" class="submit-btn">تسجيل المصروف</button></div>
-        <div class="card"><h3>سجل المصروفات</h3><div id="expensesList"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>📉 تسجيل مصروف</h3>
+                <div class="form-group"><label>نوع المصروف</label><input type="text" id="expType"></div>
+                <div class="form-group"><label>المبلغ</label><input type="number" id="expAmount"></div>
+                <button id="addExpenseBtn" class="submit-btn">تسجيل</button>
+            </div>
+            <div class="card">
+                <h3>📋 سجل المصروفات</h3>
+                <div class="scroll-container" id="expensesContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
         
         document.getElementById('addExpenseBtn').onclick = () => {
-            let expense = {
-                id: Date.now(),
-                type: document.getElementById('expenseType').value,
-                amount: parseFloat(document.getElementById('expenseAmount').value),
-                note: document.getElementById('expenseNote').value,
-                date: new Date().toLocaleString()
-            };
-            if(!expense.type || !expense.amount) { alert("يرجى إدخال نوع المصروف والمبلغ"); return; }
-            expenses.push(expense);
-            saveAllData();
-            logActivity(`إضافة مصروف: ${expense.type} - ${expense.amount} ج.م`);
-            renderExpenses();
+            let type = document.getElementById('expType').value;
+            let amount = parseFloat(document.getElementById('expAmount').value);
+            if (type && amount) {
+                expenses.push({ id: Date.now(), type, amount, date: new Date().toLocaleString() });
+                saveAllData();
+                renderExpenses();
+                logActivity(`إضافة مصروف: ${type} - ${amount}`);
+                alert("✅ تم تسجيل المصروف");
+            } else alert("املأ الحقول");
         };
         
-        let expensesHtml = `<table class="users-table"><thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>ملاحظات</th><th>إجراءات</th></tr></thead><tbody>`;
-        expenses.forEach(exp => {
-            expensesHtml += `<tr><td style="padding:8px">${exp.date}</td><td style="padding:8px">${exp.type}</td><td style="padding:8px">${exp.amount} ج.م</td><td style="padding:8px">${exp.note || '-'}</td>
-            <td><button class="btn-small btn-danger" onclick="deleteExpense(${exp.id})">حذف</button>数量</tr>`;
-        });
-        expensesHtml += `</tbody></table>`;
-        document.getElementById('expensesList').innerHTML = expensesHtml;
-    }
-    
-    window.deleteExpense = (id) => {
-        if(confirm("حذف هذا المصروف؟")) {
-            expenses = expenses.filter(e => e.id !== id);
-            saveAllData();
-            renderExpenses();
-            logActivity(`حذف مصروف`);
+        let container = document.getElementById('expensesContainer');
+        container.innerHTML = '';
+        if (expenses.length === 0) container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد مصروفات</div>';
+        else {
+            expenses.slice().reverse().forEach(e => {
+                let card = document.createElement('div');
+                card.className = 'expense-card';
+                card.innerHTML = `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;"><span>📅 ${e.date}</span><span>${e.type}</span><span>💰 <strong>${e.amount} ج.م</strong></span><button class="btn-small btn-danger" onclick="deleteExpense(${e.id})">حذف</button></div>`;
+                container.appendChild(card);
+            });
         }
-    };
+    }
+    window.deleteExpense = (id) => { if (confirm("حذف المصروف؟")) { expenses = expenses.filter(e => e.id !== id); saveAllData(); renderExpenses(); } };
 
     // ------------------------- التقسيط -------------------------
     function renderInstallments() {
-        let html = `<div class="card"><h3>تسجيل عملية تقسيط جديدة</h3>
-        <div class="form-group"><label>اسم العميل</label><input type="text" id="customerName"></div>
-        <div class="form-group"><label>إجمالي المبلغ</label><input type="number" id="totalAmount"></div>
-        <div class="form-group"><label>عدد الأقساط</label><input type="number" id="installmentCount"></div>
-        <div class="form-group"><label>المدفوع مقدمًا</label><input type="number" id="paidUpfront" value="0"></div>
-        <button id="addInstallmentBtn" class="submit-btn">تسجيل التقسيط</button></div>
-        <div class="card"><h3>الأقساط الحالية</h3><div id="installmentsList"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>📅 تسجيل تقسيط جديد</h3>
+                <div class="form-group"><label>اسم العميل</label><input type="text" id="custName"></div>
+                <div class="form-group"><label>إجمالي المبلغ</label><input type="number" id="totalAmt"></div>
+                <div class="form-group"><label>عدد الأقساط</label><input type="number" id="instCount"></div>
+                <div class="form-group"><label>المدفوع مقدمًا</label><input type="number" id="paidUp" value="0"></div>
+                <button id="addInstBtn" class="submit-btn">تسجيل</button>
+            </div>
+            <div class="card">
+                <h3>📋 الأقساط الحالية</h3>
+                <div class="scroll-container" id="instContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
         
-        document.getElementById('addInstallmentBtn').onclick = () => {
-            let customer = document.getElementById('customerName').value;
-            let total = parseFloat(document.getElementById('totalAmount').value);
-            let count = parseInt(document.getElementById('installmentCount').value);
-            let paid = parseFloat(document.getElementById('paidUpfront').value);
-            if(!customer || !total || !count) { alert("يرجى ملء جميع الحقول"); return; }
+        document.getElementById('addInstBtn').onclick = () => {
+            let customer = document.getElementById('custName').value;
+            let total = parseFloat(document.getElementById('totalAmt').value);
+            let count = parseInt(document.getElementById('instCount').value);
+            let paid = parseFloat(document.getElementById('paidUp').value);
+            if (!customer || !total || !count) { alert("املأ الحقول"); return; }
             let remaining = total - paid;
-            let installmentValue = remaining / count;
-            let install = {
-                id: Date.now(),
-                customer: customer,
-                total: total,
-                paid: paid,
-                remaining: remaining,
-                count: count,
-                installmentValue: installmentValue,
-                payments: [],
-                date: new Date().toLocaleString()
-            };
-            installments.push(install);
+            installments.push({ id: Date.now(), customer, total, paid, remaining, count, installmentValue: remaining / count, payments: [], date: new Date().toLocaleString() });
             saveAllData();
-            logActivity(`إضافة تقسيط للعميل: ${customer}`);
             renderInstallments();
+            logActivity(`إضافة تقسيط للعميل ${customer}`);
+            alert("✅ تم التسجيل");
         };
         
-        let instHtml = `<table class="users-table"><thead><tr><th>العميل</th><th>إجمالي</th><th>مدفوع</th><th>متبقي</th><th>عدد الأقساط</th><th>قيمة القسط</th><th>إجراءات</th></tr></thead><tbody>`;
-        installments.forEach(inst => {
-            instHtml += `<tr><td style="padding:8px">${inst.customer}</td><td style="padding:8px">${inst.total} ج.م</td><td style="padding:8px">${inst.paid} ج.م</td>
-            <td>${inst.remaining} ج.م</td><td style="padding:8px">${inst.count}</td><td style="padding:8px">${inst.installmentValue} ج.م</td>
-            <td><button class="btn-small" onclick="recordPayment(${inst.id})">تسجيل قسط</button>
-            <button class="btn-small btn-danger" onclick="deleteInstallment(${inst.id})">حذف</button>数量</td></tr>`;
-        });
-        instHtml += `</tbody></table>`;
-        document.getElementById('installmentsList').innerHTML = instHtml;
+        let container = document.getElementById('instContainer');
+        container.innerHTML = '';
+        if (installments.length === 0) container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد أقساط</div>';
+        else {
+            installments.forEach(inst => {
+                let card = document.createElement('div');
+                card.className = 'installment-card';
+                card.innerHTML = `<div><strong>${inst.customer}</strong> | الإجمالي: ${inst.total} ج.م | المتبقي: ${inst.remaining} ج.م | القسط: ${inst.installmentValue.toFixed(2)} ج.م</div><div style="margin-top:8px;"><button class="btn-small" onclick="recordPayment(${inst.id})">تسجيل قسط</button><button class="btn-small btn-danger" onclick="deleteInstallment(${inst.id})">حذف</button></div>`;
+                container.appendChild(card);
+            });
+        }
     }
-    
     window.recordPayment = (id) => {
         let inst = installments.find(i => i.id === id);
         let amount = prompt(`المبلغ المدفوع (المتبقي: ${inst.remaining} ج.م)`);
-        if(amount) {
+        if (amount) {
             let payment = parseFloat(amount);
-            if(payment > inst.remaining) { alert("المبلغ أكبر من المتبقي!"); return; }
+            if (payment > inst.remaining) { alert("المبلغ أكبر من المتبقي"); return; }
             inst.remaining -= payment;
             inst.paid += payment;
-            inst.payments.push({ amount: payment, date: new Date().toLocaleString() });
-            if(inst.remaining <= 0) {
-                alert(`✅ تم سداد كامل المبلغ للعميل ${inst.customer}`);
-            }
+            if (inst.remaining <= 0) alert(`✅ تم سداد كامل المبلغ للعميل ${inst.customer}`);
             saveAllData();
             renderInstallments();
-            logActivity(`تسجيل قسط للعميل ${inst.customer} بقيمة ${payment}`);
         }
     };
-    
-    window.deleteInstallment = (id) => {
-        if(confirm("حذف عملية التقسيط؟")) {
-            installments = installments.filter(i => i.id !== id);
-            saveAllData();
-            renderInstallments();
-            logActivity(`حذف عملية تقسيط`);
-        }
-    };
+    window.deleteInstallment = (id) => { if (confirm("حذف التقسيط؟")) { installments = installments.filter(i => i.id !== id); saveAllData(); renderInstallments(); } };
 
     // ------------------------- المرتجعات -------------------------
     function renderReturns() {
-        let html = `<div class="card"><h3>تسجيل مرتجع</h3>
-        <div class="form-group"><label>اختر المنتج</label><select id="returnProductSelect"><option value="">اختر منتج</option>${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select></div>
-        <div class="form-group"><label>الكمية المرتجعة</label><input type="number" id="returnQty"></div>
-        <div class="form-group"><label>سبب الإرجاع</label><textarea id="returnReason" rows="2"></textarea></div>
-        <button id="addReturnBtn" class="submit-btn">تسجيل المرتجع</button></div>
-        <div class="card"><h3>سجل المرتجعات</h3><div id="returnsList"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>🔄 تسجيل مرتجع</h3>
+                <div class="form-group"><label>اختر المنتج</label><select id="returnProduct">${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select></div>
+                <div class="form-group"><label>الكمية</label><input type="number" id="returnQty"></div>
+                <div class="form-group"><label>السبب</label><textarea id="returnReason" rows="2"></textarea></div>
+                <button id="addReturnBtn" class="submit-btn">تسجيل</button>
+            </div>
+            <div class="card">
+                <h3>📋 سجل المرتجعات</h3>
+                <div class="scroll-container" id="returnsContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
         
         document.getElementById('addReturnBtn').onclick = () => {
-            let code = document.getElementById('returnProductSelect').value;
+            let code = document.getElementById('returnProduct').value;
             let qty = parseInt(document.getElementById('returnQty').value);
             let reason = document.getElementById('returnReason').value;
-            if(!code || !qty) { alert("اختر المنتج وأدخل الكمية"); return; }
+            if (!code || !qty) { alert("املأ الحقول"); return; }
             let product = products.find(p => p.code === code);
-            if(qty > product.quantity) { alert("الكمية المرتجعة أكبر من المتوفرة!"); return; }
+            if (qty > product.quantity) { alert("الكمية أكبر من المتوفرة"); return; }
             product.quantity -= qty;
-            let returnRecord = {
-                id: Date.now(),
-                productCode: code,
-                productName: product.name,
-                quantity: qty,
-                reason: reason,
-                date: new Date().toLocaleString()
-            };
-            returns.push(returnRecord);
+            returns.push({ id: Date.now(), productName: product.name, quantity: qty, reason, date: new Date().toLocaleString() });
             saveAllData();
-            logActivity(`مرتجع منتج: ${product.name} - كمية ${qty}`);
             renderReturns();
+            logActivity(`مرتجع منتج: ${product.name} - كمية ${qty}`);
+            alert("✅ تم التسجيل");
         };
         
-        let returnsHtml = `<table class="users-table"><thead><tr><th>التاريخ</th><th>المنتج</th><th>الكمية</th><th>السبب</th></tr></thead><tbody>`;
-        returns.forEach(r => {
-            returnsHtml += `<tr><td style="padding:8px">${r.date}</td><td style="padding:8px">${r.productName}</td><td style="padding:8px">${r.quantity}</td><td style="padding:8px">${r.reason || '-'}</td></tr>`;
-        });
-        returnsHtml += `</tbody></table>`;
-        document.getElementById('returnsList').innerHTML = returnsHtml;
+        let container = document.getElementById('returnsContainer');
+        container.innerHTML = '';
+        if (returns.length === 0) container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد مرتجعات</div>';
+        else {
+            returns.slice().reverse().forEach(r => {
+                let card = document.createElement('div');
+                card.className = 'return-card';
+                card.innerHTML = `<div>📅 ${r.date}</div><div>${r.productName} x${r.quantity}</div><div>السبب: ${r.reason || '-'}</div>`;
+                container.appendChild(card);
+            });
+        }
     }
 
     // ------------------------- التوالف -------------------------
     function renderDamages() {
-        let html = `<div class="card"><h3>تسجيل تالف</h3>
-        <div class="form-group"><label>اختر المنتج</label><select id="damageProductSelect"><option value="">اختر منتج</option>${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select></div>
-        <div class="form-group"><label>الكمية التالفة</label><input type="number" id="damageQty"></div>
-        <div class="form-group"><label>سبب التلف</label><textarea id="damageReason" rows="2"></textarea></div>
-        <button id="addDamageBtn" class="submit-btn">تسجيل التالف</button></div>
-        <div class="card"><h3>سجل التوالف</h3><div id="damagesList"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>⚠️ تسجيل تالف</h3>
+                <div class="form-group"><label>اختر المنتج</label><select id="damageProduct">${products.map(p => `<option value="${p.code}">${p.name}</option>`).join('')}</select></div>
+                <div class="form-group"><label>الكمية</label><input type="number" id="damageQty"></div>
+                <div class="form-group"><label>السبب</label><textarea id="damageReason" rows="2"></textarea></div>
+                <button id="addDamageBtn" class="submit-btn">تسجيل</button>
+            </div>
+            <div class="card">
+                <h3>📋 سجل التوالف</h3>
+                <div class="scroll-container" id="damagesContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
         
         document.getElementById('addDamageBtn').onclick = () => {
-            let code = document.getElementById('damageProductSelect').value;
+            let code = document.getElementById('damageProduct').value;
             let qty = parseInt(document.getElementById('damageQty').value);
             let reason = document.getElementById('damageReason').value;
-            if(!code || !qty) { alert("اختر المنتج وأدخل الكمية"); return; }
+            if (!code || !qty) { alert("املأ الحقول"); return; }
             let product = products.find(p => p.code === code);
-            if(qty > product.quantity) { alert("الكمية التالفة أكبر من المتوفرة!"); return; }
+            if (qty > product.quantity) { alert("الكمية أكبر من المتوفرة"); return; }
             product.quantity -= qty;
-            let damageRecord = {
-                id: Date.now(),
-                productCode: code,
-                productName: product.name,
-                quantity: qty,
-                reason: reason,
-                date: new Date().toLocaleString()
-            };
-            damages.push(damageRecord);
+            damages.push({ id: Date.now(), productName: product.name, quantity: qty, reason, date: new Date().toLocaleString() });
             saveAllData();
-            logActivity(`تلف منتج: ${product.name} - كمية ${qty}`);
             renderDamages();
+            logActivity(`تلف منتج: ${product.name} - كمية ${qty}`);
+            alert("✅ تم التسجيل");
         };
         
-        let damagesHtml = `<table class="users-table"><thead><tr><th>التاريخ</th><th>المنتج</th><th>الكمية</th><th>السبب</th></tr></thead><tbody>`;
-        damages.forEach(d => {
-            damagesHtml += `<tr><td style="padding:8px">${d.date}</td><td style="padding:8px">${d.productName}</td><td style="padding:8px">${d.quantity}</td><td style="padding:8px">${d.reason || '-'}</td></tr>`;
-        });
-        damagesHtml += `</tbody><tr>`;
-        document.getElementById('damagesList').innerHTML = damagesHtml;
+        let container = document.getElementById('damagesContainer');
+        container.innerHTML = '';
+        if (damages.length === 0) container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد توالف</div>';
+        else {
+            damages.slice().reverse().forEach(d => {
+                let card = document.createElement('div');
+                card.className = 'damage-card';
+                card.innerHTML = `<div>📅 ${d.date}</div><div>${d.productName} x${d.quantity}</div><div>السبب: ${d.reason || '-'}</div>`;
+                container.appendChild(card);
+            });
+        }
     }
 
     // ------------------------- الموردين -------------------------
     function renderSuppliers() {
-        let html = `<div class="card"><h3>إضافة مورد جديد</h3>
-        <div class="form-group"><label>اسم المورد</label><input type="text" id="supplierName"></div>
-        <div class="form-group"><label>رقم الهاتف</label><input type="text" id="supplierPhone"></div>
-        <div class="form-group"><label>العنوان</label><input type="text" id="supplierAddress"></div>
-        <button id="addSupplierBtn" class="submit-btn">إضافة مورد</button></div>
-        <div class="card"><h3>قائمة الموردين</h3><div id="suppliersList"></div></div>`;
+        let html = `
+            <div class="card">
+                <h3>🏭 إضافة مورد جديد</h3>
+                <div class="form-group"><label>اسم المورد</label><input type="text" id="suppName"></div>
+                <div class="form-group"><label>رقم الهاتف</label><input type="text" id="suppPhone"></div>
+                <div class="form-group"><label>العنوان</label><input type="text" id="suppAddress"></div>
+                <button id="addSupplierBtn" class="submit-btn">إضافة</button>
+            </div>
+            <div class="card">
+                <h3>📋 قائمة الموردين</h3>
+                <div class="scroll-container" id="suppliersContainer"></div>
+            </div>
+        `;
         document.getElementById('dynamicView').innerHTML = html;
         
         document.getElementById('addSupplierBtn').onclick = () => {
-            let name = document.getElementById('supplierName').value;
-            if(!name) { alert("أدخل اسم المورد"); return; }
-            let supplier = {
-                id: Date.now(),
-                name: name,
-                phone: document.getElementById('supplierPhone').value,
-                address: document.getElementById('supplierAddress').value,
-                date: new Date().toLocaleString()
-            };
-            suppliers.push(supplier);
+            let name = document.getElementById('suppName').value;
+            if (!name) { alert("أدخل اسم المورد"); return; }
+            suppliers.push({ id: Date.now(), name, phone: document.getElementById('suppPhone').value, address: document.getElementById('suppAddress').value, date: new Date().toLocaleString() });
             saveAllData();
-            logActivity(`إضافة مورد: ${name}`);
             renderSuppliers();
+            logActivity(`إضافة مورد: ${name}`);
+            alert("✅ تم الإضافة");
         };
         
-        let suppliersHtml = `<table class="users-table"><thead><tr><th>الاسم</th><th>الهاتف</th><th>العنوان</th><th>تاريخ الإضافة</th><th>إجراءات</th></tr></thead><tbody>`;
-        suppliers.forEach(s => {
-            suppliersHtml += `<td>${s.name}数量<td style="padding:8px">${s.phone || '-'}</td><td style="padding:8px">${s.address || '-'}</td><td style="padding:8px">${s.date}</td>
-            <td><button class="btn-small btn-danger" onclick="deleteSupplier(${s.id})">حذف</button>数量</td></tr>`;
-        });
-        suppliersHtml += `</tbody></table>`;
-        document.getElementById('suppliersList').innerHTML = suppliersHtml;
-    }
-    
-    window.deleteSupplier = (id) => {
-        if(confirm("حذف هذا المورد؟")) {
-            suppliers = suppliers.filter(s => s.id !== id);
-            saveAllData();
-            renderSuppliers();
-            logActivity(`حذف مورد`);
+        let container = document.getElementById('suppliersContainer');
+        container.innerHTML = '';
+        if (suppliers.length === 0) container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد موردين</div>';
+        else {
+            suppliers.forEach(s => {
+                let card = document.createElement('div');
+                card.className = 'supplier-card';
+                card.innerHTML = `<div><strong>${s.name}</strong></div><div>📞 ${s.phone || '-'}</div><div>🏠 ${s.address || '-'}</div><button class="btn-small btn-danger" onclick="deleteSupplier(${s.id})">حذف</button>`;
+                container.appendChild(card);
+            });
         }
-    };
+    }
+    window.deleteSupplier = (id) => { if (confirm("حذف المورد؟")) { suppliers = suppliers.filter(s => s.id !== id); saveAllData(); renderSuppliers(); } };
 
+    // ------------------------- المخزون -------------------------
     function renderInventory() {
-        let lowStock = checkLowStock();
-        let alertHtml = lowStock.length ? `<div class="alert-low">⚠️ تنبيه: نقص مخزون في: ${lowStock.map(p=>p.name).join(', ')}</div>` : '';
-        let table = `<table class="users-table"><tr><th>المنتج</th><th>الكمية</th><th>سعر الشراء</th><th>سعر البيع</th></tr>${products.map(p=>`<td>${p.name}数量<td style="padding:8px">${p.quantity}</td><td style="padding:8px">${p.buyPrice} ج.م</td><td style="padding:8px">${p.sellPrice} ج.م</td></tr>`).join('')}</table>`;
-        document.getElementById('dynamicView').innerHTML = `<div class="card">${alertHtml}<h3>المخزون الحالي</h3>${table}</div>`;
+        let lowStock = products.filter(p => p.quantity <= 5);
+        let html = `<div class="card"><h3>📊 المخزون الحالي</h3>${lowStock.length ? `<div style="background:#ffeaa7;padding:10px;border-radius:10px;margin-bottom:15px;">⚠️ تنبيه: نقص مخزون في: ${lowStock.map(p=>p.name).join(', ')}</div>` : ''}<div class="scroll-container" id="inventoryContainer"></div></div>`;
+        document.getElementById('dynamicView').innerHTML = html;
+        
+        let container = document.getElementById('inventoryContainer');
+        container.innerHTML = '';
+        products.forEach(p => {
+            let card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;"><span><strong>${p.name}</strong></span><span>📦 ${p.quantity}</span><span>💰 ${p.buyPrice} ج.م</span><span>💵 ${p.sellPrice} ج.م</span></div>`;
+            container.appendChild(card);
+        });
     }
 
+    // ------------------------- الأرباح -------------------------
     function renderProfits() {
         let totalSales = sales.reduce((s,i)=>s+i.total,0);
         let totalExpenses = expenses.reduce((s,i)=>s+i.amount,0);
-        let totalPurchaseCost = products.reduce((s,p)=>s+(p.buyPrice*p.quantity),0);
-        let totalPurchasesValue = purchases.reduce((s,p)=>s+p.total,0);
-        let netProfit = totalSales - totalExpenses - totalPurchaseCost;
-        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>تقرير الأرباح</h3>
-        <p>إجمالي المبيعات: ${totalSales} ج.م</p>
-        <p>إجمالي المشتريات: ${totalPurchasesValue} ج.م</p>
-        <p>إجمالي المصروفات: ${totalExpenses} ج.م</p>
-        <p>قيمة المخزون الحالي: ${totalPurchaseCost} ج.م</p>
-        <h2 style="color:var(--success)">صافي الربح: ${netProfit} ج.م</h2></div>`;
+        let totalStockValue = products.reduce((s,p)=>s+(p.buyPrice*p.quantity),0);
+        let netProfit = totalSales - totalExpenses - totalStockValue;
+        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>📈 تقرير الأرباح</h3><div style="padding:10px;"><p>💰 إجمالي المبيعات: <strong>${totalSales} ج.م</strong></p><p>📉 إجمالي المصروفات: <strong>${totalExpenses} ج.م</strong></p><p>📦 قيمة المخزون: <strong>${totalStockValue} ج.م</strong></p><hr><h2 style="color:var(--success)">✅ صافي الربح: ${netProfit} ج.م</h2></div></div>`;
     }
 
+    // ------------------------- النسخ الاحتياطي -------------------------
     function renderBackup() {
-        document.getElementById('dynamicView').innerHTML = `<div class="card">
-            <button class="submit-btn" id="exportBackup">📥 تصدير نسخة احتياطية</button>
-            <input type="file" id="importFile" accept=".json" style="margin-top:10px">
-            <button id="importBackupBtn" class="btn-small">📤 استيراد واسترجاع</button>
-        </div>`;
+        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>💾 نسخ احتياطي</h3><button id="exportBackup" class="submit-btn" style="margin-bottom:10px">📥 تصدير البيانات</button><input type="file" id="importFile" accept=".json"><button id="importBackupBtn" class="btn-small" style="margin-top:10px">📤 استيراد واسترجاع</button></div>`;
         document.getElementById('exportBackup').onclick = () => {
             let data = { products, sales, purchases, expenses, installments, returns, damages, suppliers, repairs, users, userActivityLog };
-            let blob = new Blob([JSON.stringify(data)], {type:"application/json"});
-            let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "hana_backup.json"; a.click();
-            alert("تم تصدير النسخة الاحتياطية");
+            let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:"application/json"})); a.download = "hana_backup.json"; a.click();
+            alert("تم التصدير");
         };
         document.getElementById('importBackupBtn').onclick = () => {
             let file = document.getElementById('importFile').files[0];
-            if(!file) return;
+            if (!file) return;
             let reader = new FileReader();
-            reader.onload = (e) => { 
-                let data = JSON.parse(e.target.result); 
-                products = data.products || [];
-                sales = data.sales || [];
-                purchases = data.purchases || [];
-                expenses = data.expenses || [];
-                installments = data.installments || [];
-                returns = data.returns || [];
-                damages = data.damages || [];
-                suppliers = data.suppliers || [];
-                repairs = data.repairs || [];
-                users = data.users || [];
-                userActivityLog = data.userActivityLog || [];
-                saveAllData(); 
-                alert("تم الاسترجاع بنجاح"); 
-                location.reload(); 
-            };
+            reader.onload = (e) => { let data = JSON.parse(e.target.result); products = data.products || []; sales = data.sales || []; purchases = data.purchases || []; expenses = data.expenses || []; installments = data.installments || []; returns = data.returns || []; damages = data.damages || []; suppliers = data.suppliers || []; repairs = data.repairs || []; users = data.users || []; userActivityLog = data.userActivityLog || []; saveAllData(); alert("تم الاسترجاع"); location.reload(); };
             reader.readAsText(file);
         };
     }
 
+    // ------------------------- سجل النشاط -------------------------
     function renderLogs() {
-        let logsHtml = userActivityLog.map(l=>`<div style="border-bottom:1px solid #eee; padding:5px">[${l.time}] ${l.user}: ${l.action}</div>`).join('');
-        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>سجل النشاطات</h3>${logsHtml || "لا توجد نشاطات"}</div>`;
+        document.getElementById('dynamicView').innerHTML = `<div class="card"><h3>📋 سجل النشاطات</h3><div class="scroll-container">${userActivityLog.map(l=>`<div style="border-bottom:1px solid #eee;padding:8px;">[${l.time}] ${l.user}: ${l.action}</div>`).join('') || "لا توجد نشاطات"}</div></div>`;
     }
 
     // ------------------------- صيانة الأجهزة -------------------------
     function renderRepairs() {
         let html = `
-            <div class="repair-stats">
-                <div class="repair-stat-card"><i class="fas fa-mobile-alt"></i><div class="value" id="totalRepairs">0</div><div class="label">إجمالي الأجهزة</div></div>
-                <div class="repair-stat-card"><i class="fas fa-check-circle"></i><div class="value" id="completedRepairs">0</div><div class="label">تم الإصلاح</div></div>
-                <div class="repair-stat-card"><i class="fas fa-clock"></i><div class="value" id="pendingRepairs">0</div><div class="label">قيد العمل</div></div>
-                <div class="repair-stat-card"><i class="fas fa-truck"></i><div class="value" id="deliveredRepairs">0</div><div class="label">تم التسليم</div></div>
-                <div class="repair-stat-card"><i class="fas fa-money-bill-wave"></i><div class="value" id="revenueRepairs">0 ج.م</div><div class="label">إجمالي الإيرادات</div></div>
-            </div>
+            <div class="repair-stats" id="repairStats"></div>
             <div class="card">
-                <h3><i class="fas fa-plus-circle"></i> تسجيل جهاز جديد للصيانة</h3>
-                <form id="repairForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-                    <div class="form-group"><label>اسم العميل *</label><input type="text" id="repairCustomerName" required></div>
-                    <div class="form-group"><label>رقم الهاتف</label><input type="text" id="repairCustomerPhone"></div>
-                    <div class="form-group"><label>نوع الجهاز</label><select id="repairDeviceType"><option value="هاتف">📱 هاتف</option><option value="آيفون">🍎 آيفون</option><option value="تابلت">📟 تابلت</option><option value="لابتوب">💻 لابتوب</option><option value="كمبيوتر">🖥️ كمبيوتر</option></select></div>
-                    <div class="form-group"><label>الموديل</label><input type="text" id="repairDeviceModel" placeholder="مثال: iPhone 12"></div>
-                    <div class="form-group"><label>الرقم التسلسلي</label><input type="text" id="repairSerial" placeholder="IMEI/Serial"></div>
-                    <div class="form-group"><label>نوع العطل *</label><textarea id="repairFault" rows="2" required></textarea></div>
-                    <div class="form-group"><label>تاريخ الاستلام *</label><input type="date" id="repairReceiveDate" required></div>
-                    <div class="form-group"><label>تاريخ التسليم المتوقع</label><input type="date" id="repairDeliveryDate"></div>
-                    <div class="form-group"><label>تكلفة الصيانة</label><input type="number" id="repairCost" value="0" step="0.01"></div>
-                    <div class="form-group"><label>قطع الغيار</label><textarea id="repairParts" rows="2" placeholder="قطع الغيار المستخدمة"></textarea></div>
-                    <div class="form-group"><label>الحالة</label><select id="repairStatusSelect"><option value="قيد الانتظار">⏳ قيد الانتظار</option><option value="قيد الإصلاح">🔧 قيد الإصلاح</option><option value="بانتظار قطع غيار">📦 بانتظار قطع غيار</option><option value="تم الإصلاح">✅ تم الإصلاح</option><option value="تم التسليم">🚀 تم التسليم</option><option value="غير قابل للإصلاح">❌ غير قابل للإصلاح</option></select></div>
-                    <div class="form-group"><label>ملاحظات</label><textarea id="repairNotes" rows="2"></textarea></div>
-                    <div class="form-group" style="grid-column:1/-1"><button type="submit" class="submit-btn"><i class="fas fa-save"></i> تسجيل الجهاز</button></div>
+                <h3>🔧 تسجيل جهاز جديد</h3>
+                <form id="repairForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;">
+                    <div class="form-group"><label>اسم العميل *</label><input type="text" id="rCustomer" required></div>
+                    <div class="form-group"><label>رقم الهاتف</label><input type="text" id="rPhone"></div>
+                    <div class="form-group"><label>نوع الجهاز</label><select id="rDevice"><option value="هاتف">هاتف</option><option value="آيفون">آيفون</option><option value="تابلت">تابلت</option><option value="لابتوب">لابتوب</option></select></div>
+                    <div class="form-group"><label>الموديل</label><input type="text" id="rModel"></div>
+                    <div class="form-group"><label>نوع العطل *</label><textarea id="rFault" rows="2" required></textarea></div>
+                    <div class="form-group"><label>تاريخ الاستلام</label><input type="date" id="rReceive"></div>
+                    <div class="form-group"><label>تاريخ التسليم</label><input type="date" id="rDelivery"></div>
+                    <div class="form-group"><label>التكلفة</label><input type="number" id="rCost" value="0"></div>
+                    <div class="form-group"><label>الحالة</label><select id="rStatus"><option value="قيد الانتظار">قيد الانتظار</option><option value="قيد الإصلاح">قيد الإصلاح</option><option value="تم الإصلاح">تم الإصلاح</option><option value="تم التسليم">تم التسليم</option></select></div>
+                    <div style="grid-column:1/-1"><button type="submit" class="submit-btn">تسجيل الجهاز</button></div>
                 </form>
             </div>
             <div class="card">
-                <h3><i class="fas fa-search"></i> بحث وتصفية</h3>
-                <div class="search-filter-bar">
-                    <input type="text" id="repairSearch" placeholder="🔍 بحث باسم العميل، الهاتف، الموديل...">
-                    <select id="repairStatusFilter"><option value="الكل">📋 جميع الحالات</option><option value="قيد الانتظار">⏳ قيد الانتظار</option><option value="قيد الإصلاح">🔧 قيد الإصلاح</option><option value="بانتظار قطع غيار">📦 بانتظار قطع غيار</option><option value="تم الإصلاح">✅ تم الإصلاح</option><option value="تم التسليم">🚀 تم التسليم</option><option value="غير قابل للإصلاح">❌ غير قابل للإصلاح</option></select>
-                    <button class="btn-small btn-success" onclick="exportRepairsToExcel()"><i class="fas fa-file-excel"></i> Excel</button>
-                    <button class="btn-small btn-primary" onclick="printRepairsReport()"><i class="fas fa-print"></i> طباعة</button>
-                </div>
+                <h3>🔍 بحث وتصفية</h3>
+                <div class="search-bar"><input type="text" id="searchRepair" placeholder="بحث..."><select id="filterStatus"><option value="الكل">الكل</option><option value="قيد الانتظار">قيد الانتظار</option><option value="قيد الإصلاح">قيد الإصلاح</option><option value="تم الإصلاح">تم الإصلاح</option><option value="تم التسليم">تم التسليم</option></select><button class="btn-small btn-success" onclick="exportRepairsExcel()">Excel</button></div>
             </div>
             <div class="card">
-                <h3><i class="fas fa-list-alt"></i> قائمة أجهزة الصيانة</h3>
-                <div style="overflow-x:auto"><table class="users-table"><thead><tr><th>#</th><th>العميل</th><th>الجهاز</th><th>الموديل</th><th>العطل</th><th>تاريخ الاستلام</th><th>التكلفة</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="repairsTableBody"></tbody></table></div>
+                <h3>📋 أجهزة الصيانة</h3>
+                <div class="scroll-container" id="repairsContainer"></div>
             </div>
         `;
         document.getElementById('dynamicView').innerHTML = html;
         
-        document.getElementById('repairReceiveDate').valueAsDate = new Date();
-        document.getElementById('repairDeliveryDate').valueAsDate = new Date(Date.now() + 7*24*60*60*1000);
+        document.getElementById('rReceive').valueAsDate = new Date();
+        document.getElementById('rDelivery').valueAsDate = new Date(Date.now() + 7*86400000);
         
-        document.getElementById('repairForm').addEventListener('submit', (e) => {
+        document.getElementById('repairForm').onsubmit = (e) => {
             e.preventDefault();
-            let repair = {
-                id: Date.now(), customerName: document.getElementById('repairCustomerName').value,
-                customerPhone: document.getElementById('repairCustomerPhone').value,
-                deviceType: document.getElementById('repairDeviceType').value,
-                deviceModel: document.getElementById('repairDeviceModel').value,
-                serialNumber: document.getElementById('repairSerial').value,
-                faultType: document.getElementById('repairFault').value,
-                receiveDate: document.getElementById('repairReceiveDate').value,
-                expectedDeliveryDate: document.getElementById('repairDeliveryDate').value,
-                repairCost: parseFloat(document.getElementById('repairCost').value) || 0,
-                usedParts: document.getElementById('repairParts').value,
-                status: document.getElementById('repairStatusSelect').value,
-                notes: document.getElementById('repairNotes').value,
-                createdDate: new Date().toLocaleString()
-            };
-            if(!repair.customerName || !repair.faultType || !repair.receiveDate) { alert("املأ الحقول الأساسية"); return; }
+            let repair = { id: Date.now(), customerName: document.getElementById('rCustomer').value, customerPhone: document.getElementById('rPhone').value, deviceType: document.getElementById('rDevice').value, deviceModel: document.getElementById('rModel').value, faultType: document.getElementById('rFault').value, receiveDate: document.getElementById('rReceive').value, expectedDeliveryDate: document.getElementById('rDelivery').value, repairCost: parseFloat(document.getElementById('rCost').value) || 0, status: document.getElementById('rStatus').value, createdDate: new Date().toLocaleString() };
+            if (!repair.customerName || !repair.faultType) { alert("املأ الحقول الأساسية"); return; }
             repairs.unshift(repair);
             saveAllData();
             renderRepairs();
             logActivity(`إضافة جهاز صيانة للعميل ${repair.customerName}`);
-            alert("✅ تم التسجيل بنجاح");
-        });
+            alert("✅ تم التسجيل");
+        };
         
-        document.getElementById('repairSearch')?.addEventListener('keyup', () => renderRepairsTable());
-        document.getElementById('repairStatusFilter')?.addEventListener('change', () => renderRepairsTable());
-        renderRepairsTable();
-        updateRepairStats();
-    }
-
-    function renderRepairsTable() {
-        const tbody = document.getElementById('repairsTableBody');
-        if(!tbody) return;
-        let search = document.getElementById('repairSearch')?.value.toLowerCase() || '';
-        let statusFilter = document.getElementById('repairStatusFilter')?.value || 'الكل';
-        let filtered = repairs.filter(r => (statusFilter === 'الكل' || r.status === statusFilter) && 
-            (r.customerName.toLowerCase().includes(search) || (r.customerPhone && r.customerPhone.includes(search)) || (r.deviceModel && r.deviceModel.toLowerCase().includes(search))));
-        filtered.sort((a,b)=>b.id-a.id);
-        tbody.innerHTML = '';
-        filtered.forEach((r,i)=>{
-            let statusClass = { 'قيد الانتظار':'status-pending','قيد الإصلاح':'status-progress','بانتظار قطع غيار':'status-waiting','تم الإصلاح':'status-completed','تم التسليم':'status-delivered','غير قابل للإصلاح':'status-unfixable' }[r.status] || 'status-pending';
-            let row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${i+1}数量<td style="padding:8px"><strong>${r.customerName}</strong><br><small>📞 ${r.customerPhone||'-'}</small>数量
-                <td>${r.deviceType}数量<td style="padding:8px">${r.deviceModel||'-'}数量<td style="padding:8px"><small>${r.faultType.substring(0,30)}</small>数量
-                <td>${r.receiveDate}数量<td style="padding:8px"><strong>${r.repairCost} ج.م</strong>数量
-                <td><span class="status-badge ${statusClass}">${r.status}</span>数量
-                <td class="repair-actions">
-                    <button class="btn-small" onclick="viewRepairDetail(${r.id})" title="تفاصيل"><i class="fas fa-eye"></i></button>
-                    <button class="btn-small btn-warning" onclick="editRepairItem(${r.id})" title="تعديل"><i class="fas fa-edit"></i></button>
-                    <button class="btn-small btn-success" onclick="createRepairInvoice(${r.id})" title="فاتورة"><i class="fas fa-file-invoice"></i></button>
-                    <button class="btn-small btn-primary" onclick="printRepairTicket(${r.id})" title="طباعة"><i class="fas fa-print"></i></button>
-                    <button class="btn-small btn-danger" onclick="deleteRepairItem(${r.id})" title="حذف"><i class="fas fa-trash"></i></button>
-                数量
-            `;
-        });
-    }
-
-    function updateRepairStats() {
-        const totalEl = document.getElementById('totalRepairs');
-        const completedEl = document.getElementById('completedRepairs');
-        const pendingEl = document.getElementById('pendingRepairs');
-        const deliveredEl = document.getElementById('deliveredRepairs');
-        const revenueEl = document.getElementById('revenueRepairs');
-        if(totalEl) totalEl.innerText = repairs.length;
-        if(completedEl) completedEl.innerText = repairs.filter(r=>r.status==='تم الإصلاح').length;
-        if(pendingEl) pendingEl.innerText = repairs.filter(r=>['قيد الانتظار','قيد الإصلاح','بانتظار قطع غيار'].includes(r.status)).length;
-        if(deliveredEl) deliveredEl.innerText = repairs.filter(r=>r.status==='تم التسليم').length;
-        if(revenueEl) revenueEl.innerHTML = repairs.reduce((s,r)=>s+r.repairCost,0).toFixed(2)+' ج.م';
-    }
-
-    window.viewRepairDetail = (id) => {
-        let r = repairs.find(x=>x.id===id);
-        if(r) alert(`📋 تفاصيل الصيانة\n👤 العميل: ${r.customerName}\n📞 الهاتف: ${r.customerPhone||'-'}\n📱 الجهاز: ${r.deviceType} ${r.deviceModel||''}\n🔢 الرقم التسلسلي: ${r.serialNumber||'-'}\n⚠️ العطل: ${r.faultType}\n📅 الاستلام: ${r.receiveDate}\n📅 التسليم المتوقع: ${r.expectedDeliveryDate||'لم يحدد'}\n💰 التكلفة: ${r.repairCost} ج.م\n🔧 قطع الغيار: ${r.usedParts||'لا يوجد'}\n📊 الحالة: ${r.status}\n📝 ملاحظات: ${r.notes||'لا توجد'}`);
-    };
-
-    window.editRepairItem = (id) => {
-        verifyAdmin((isAdmin)=>{
-            if(isAdmin){
-                let r = repairs.find(x=>x.id===id);
-                if(r){
-                    document.getElementById('editRepairId').value = r.id;
-                    document.getElementById('editCustomerName').value = r.customerName;
-                    document.getElementById('editCustomerPhone').value = r.customerPhone || '';
-                    document.getElementById('editDeviceType').value = r.deviceType;
-                    document.getElementById('editDeviceModel').value = r.deviceModel || '';
-                    document.getElementById('editSerialNumber').value = r.serialNumber || '';
-                    document.getElementById('editFaultType').value = r.faultType;
-                    document.getElementById('editRepairCost').value = r.repairCost;
-                    document.getElementById('editUsedParts').value = r.usedParts || '';
-                    document.getElementById('editRepairStatus').value = r.status;
-                    document.getElementById('editNotes').value = r.notes || '';
-                    document.getElementById('repairEditModal').style.display = 'flex';
-                }
-            }
-        });
-    };
-
-    document.getElementById('repairEditForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const id = parseInt(document.getElementById('editRepairId').value);
-        const repair = repairs.find(r => r.id === id);
-        if(repair){
-            repair.customerName = document.getElementById('editCustomerName').value;
-            repair.customerPhone = document.getElementById('editCustomerPhone').value;
-            repair.deviceType = document.getElementById('editDeviceType').value;
-            repair.deviceModel = document.getElementById('editDeviceModel').value;
-            repair.serialNumber = document.getElementById('editSerialNumber').value;
-            repair.faultType = document.getElementById('editFaultType').value;
-            repair.repairCost = parseFloat(document.getElementById('editRepairCost').value);
-            repair.usedParts = document.getElementById('editUsedParts').value;
-            repair.status = document.getElementById('editRepairStatus').value;
-            repair.notes = document.getElementById('editNotes').value;
-            saveAllData();
-            renderRepairs();
-            closeRepairEditModal();
-            logActivity(`تعديل بيانات صيانة للعميل ${repair.customerName}`);
-            alert("✅ تم التعديل بنجاح");
+        function updateRepairStats() {
+            document.getElementById('repairStats').innerHTML = `<div class="repair-stat-card"><div class="value">${repairs.length}</div><div class="label">إجمالي</div></div><div class="repair-stat-card"><div class="value">${repairs.filter(r=>r.status==='تم الإصلاح').length}</div><div class="label">تم الإصلاح</div></div><div class="repair-stat-card"><div class="value">${repairs.filter(r=>r.status==='قيد الانتظار'||r.status==='قيد الإصلاح').length}</div><div class="label">قيد العمل</div></div><div class="repair-stat-card"><div class="value">${repairs.reduce((s,r)=>s+r.repairCost,0)} ج.م</div><div class="label">الإيرادات</div></div>`;
         }
-    });
-
-    window.deleteRepairItem = (id) => {
-        verifyAdmin((isAdmin)=>{
-            if(isAdmin && confirm("⚠️ حذف هذا الجهاز؟")){
-                let repair = repairs.find(r=>r.id===id);
-                repairs = repairs.filter(x=>x.id!==id);
-                saveAllData();
-                renderRepairs();
-                logActivity(`حذف جهاز صيانة للعميل ${repair?.customerName}`);
-                alert("✅ تم الحذف");
+        
+        function renderRepairsList() {
+            let search = document.getElementById('searchRepair')?.value.toLowerCase() || '';
+            let filter = document.getElementById('filterStatus')?.value || 'الكل';
+            let filtered = repairs.filter(r => (filter === 'الكل' || r.status === filter) && r.customerName.toLowerCase().includes(search));
+            let container = document.getElementById('repairsContainer');
+            container.innerHTML = '';
+            if (filtered.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;color:#888;">لا توجد أجهزة</div>'; }
+            else {
+                filtered.forEach(r => {
+                    let statusClass = r.status === 'قيد الانتظار' ? 'status-pending' : (r.status === 'قيد الإصلاح' ? 'status-progress' : (r.status === 'تم الإصلاح' ? 'status-completed' : 'status-delivered'));
+                    let card = document.createElement('div');
+                    card.className = 'repair-card';
+                    card.innerHTML = `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;"><div><strong>${r.customerName}</strong><br><small>📞 ${r.customerPhone || '-'}</small></div><div>${r.deviceType} ${r.deviceModel || ''}</div><div>📅 ${r.receiveDate}</div><div>💰 ${r.repairCost} ج.م</div><div><span class="status-badge ${statusClass}">${r.status}</span></div><div><button class="btn-small" onclick="editRepairStatus(${r.id})">تعديل</button><button class="btn-small btn-success" onclick="createRepairInvoice(${r.id})">فاتورة</button><button class="btn-small btn-danger" onclick="deleteRepairItem(${r.id})">حذف</button></div></div>`;
+                    container.appendChild(card);
+                });
             }
-        });
+        }
+        
+        document.getElementById('searchRepair')?.addEventListener('keyup', renderRepairsList);
+        document.getElementById('filterStatus')?.addEventListener('change', renderRepairsList);
+        updateRepairStats();
+        renderRepairsList();
+    }
+    
+    window.editRepairStatus = (id) => {
+        if (currentUser.role !== 'مدير') { alert("فقط المدير يمكنه التعديل"); return; }
+        let r = repairs.find(x => x.id === id);
+        let newStatus = prompt("الحالة الجديدة:\nقيد الانتظار\nقيد الإصلاح\nتم الإصلاح\nتم التسليم", r.status);
+        if (newStatus && ['قيد الانتظار', 'قيد الإصلاح', 'تم الإصلاح', 'تم التسليم'].includes(newStatus)) { r.status = newStatus; saveAllData(); renderRepairs(); alert("✅ تم التحديث"); }
     };
-
     window.createRepairInvoice = (id) => {
-        let r = repairs.find(x=>x.id===id);
-        if(r && r.repairCost>0){
-            let invoiceItems = [{ name: `صيانة ${r.deviceType} ${r.deviceModel||''}`, qty: 1, price: r.repairCost, total: r.repairCost }];
-            let saleRecord = { id: Date.now(), date: new Date().toLocaleString(), items: invoiceItems, total: r.repairCost, type: 'صيانة', repairId: r.id, customerName: r.customerName };
-            sales.push(saleRecord);
+        let r = repairs.find(x => x.id === id);
+        if (r && r.repairCost > 0) {
+            sales.push({ id: Date.now(), date: new Date().toLocaleString(), items: [{ name: `صيانة ${r.deviceType} ${r.deviceModel || ''}`, qty: 1, price: r.repairCost, total: r.repairCost }], total: r.repairCost });
             saveAllData();
-            printInvoice({items:invoiceItems, total:r.repairCost, paid:r.repairCost, remaining:0});
-            logActivity(`فاتورة صيانة للعميل ${r.customerName} بقيمة ${r.repairCost}`);
             alert(`✅ فاتورة الصيانة بقيمة ${r.repairCost} ج.م`);
         } else alert("لا يمكن إنشاء فاتورة بتكلفة 0");
     };
-
-    window.printRepairTicket = (id) => {
-        let r = repairs.find(x=>x.id===id);
-        if(r){
-            let w = window.open('','_blank');
-            w.document.write(`<html dir="rtl"><head><title>تذكرة صيانة</title><style>body{font-family:Arial;padding:20px}</style></head>
-            <body><div style="border:2px dashed #333;padding:20px;border-radius:15px;max-width:400px;margin:0 auto">
-            <h3 style="text-align:center">🏪 Hana Store<br>تذكرة صيانة</h3>
-            <p><strong>العميل:</strong> ${r.customerName}<br><strong>الهاتف:</strong> ${r.customerPhone||'-'}<br><strong>الجهاز:</strong> ${r.deviceType} ${r.deviceModel||''}<br><strong>الرقم التسلسلي:</strong> ${r.serialNumber||'-'}<br><strong>العطل:</strong> ${r.faultType}<br><strong>تاريخ الاستلام:</strong> ${r.receiveDate}<br><strong>التسليم المتوقع:</strong> ${r.expectedDeliveryDate||'لم يحدد'}<br><strong>التكلفة:</strong> ${r.repairCost} ج.م</p>
-            <div style="background:#f0f0f0;padding:10px;text-align:center;margin:15px 0"><strong>الحالة:</strong> ${r.status}</div>
-            <p style="text-align:center;font-size:11px">تاريخ الطباعة: ${new Date().toLocaleString()}</p></div></body></html>`);
-            w.document.close(); w.print();
-        }
+    window.deleteRepairItem = (id) => {
+        if (currentUser.role !== 'مدير') { alert("فقط المدير يمكنه الحذف"); return; }
+        if (confirm("حذف هذا الجهاز؟")) { repairs = repairs.filter(x => x.id !== id); saveAllData(); renderRepairs(); alert("✅ تم الحذف"); }
     };
-
-    window.printRepairsReport = () => {
-        let w = window.open('','_blank');
-        w.document.write(`<html dir="rtl"><head><title>تقرير الصيانة</title><style>body{font-family:Arial;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:center}th{background:#0a3d62;color:white}</style></head>
-        <body><h2 style="text-align:center">🏪 Hana Store - تقرير الصيانة</h2><p style="text-align:center">التاريخ: ${new Date().toLocaleString()}</p>
-        8"<thead><tr><th>#</th><th>العميل</th><th>الجهاز</th><th>الموديل</th><th>العطل</th><th>تاريخ الاستلام</th><th>التكلفة</th><th>الحالة</th></tr></thead><tbody>
-        ${repairs.map((r,i)=>`<tr><td style="padding:8px">${i+1}数量<td style="padding:8px">${r.customerName}数量<td style="padding:8px">${r.deviceType}数量<td style="padding:8px">${r.deviceModel||'-'}数量<td style="padding:8px">${r.faultType.substring(0,40)}数量<td style="padding:8px">${r.receiveDate}数量<td style="padding:8px">${r.repairCost} ج.م数量<td style="padding:8px">${r.status}数量</tr>`).join('')}
-        </tbody></table><p style="text-align:center">إجمالي الأجهزة: ${repairs.length} | إجمالي الإيرادات: ${repairs.reduce((s,r)=>s+r.repairCost,0)} ج.م</p></body></html>`);
-        w.document.close(); w.print();
-    };
-
-    window.exportRepairsToExcel = () => {
-        let csv = "الرقم,اسم العميل,رقم الهاتف,نوع الجهاز,الموديل,الرقم التسلسلي,العطل,تاريخ الاستلام,تاريخ التسليم,التكلفة,قطع الغيار,الحالة,ملاحظات\n";
-        repairs.forEach(r=>{ csv += `"${r.id}","${r.customerName}","${r.customerPhone||''}","${r.deviceType}","${r.deviceModel||''}","${r.serialNumber||''}","${r.faultType}","${r.receiveDate}","${r.expectedDeliveryDate||''}","${r.repairCost}","${r.usedParts||''}","${r.status}","${r.notes||''}"\n`; });
-        let blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
-        let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "repairs_report.csv"; a.click(); URL.revokeObjectURL(a.href);
+    window.exportRepairsExcel = () => {
+        let csv = "الاسم,الهاتف,الجهاز,الموديل,العطل,تاريخ الاستلام,التكلفة,الحالة\n";
+        repairs.forEach(r => csv += `"${r.customerName}","${r.customerPhone||''}","${r.deviceType}","${r.deviceModel||''}","${r.faultType}","${r.receiveDate}","${r.repairCost}","${r.status}"\n`);
+        let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(["\uFEFF" + csv], {type:"text/csv"})); a.download = "repairs.csv"; a.click();
         alert("✅ تم التصدير");
     };
 
@@ -1468,109 +1228,92 @@
     function renderUserManagement() {
         let html = `
             <div class="card">
-                <h3><i class="fas fa-users"></i> إدارة المستخدمين</h3>
-                <p style="color:#666; margin-bottom:15px">🔒 فقط المدير يمكنه تعديل بيانات المستخدمين</p>
-                <table class="users-table">
-                    <thead><tr><th>اسم المستخدم</th><th>الصلاحية</th><th>آخر تسجيل دخول</th><th>الإجراءات</th></tr></thead>
-                    <tbody id="usersTableBody"></tbody>
-                </table>
+                <h3>👥 إدارة المستخدمين</h3>
+                <p style="color:#666;margin-bottom:15px;">🔒 فقط المدير يمكنه التعديل</p>
+                <div class="scroll-container" id="usersContainer"></div>
             </div>
             <div class="card">
-                <h3><i class="fas fa-user-plus"></i> إضافة مستخدم جديد</h3>
-                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="newUsername" placeholder="أدخل اسم المستخدم"></div>
-                <div class="form-group"><label>كلمة المرور</label><input type="password" id="newPassword" placeholder="أدخل كلمة المرور"></div>
+                <h3>➕ إضافة مستخدم</h3>
+                <div class="form-group"><label>اسم المستخدم</label><input type="text" id="newUser"></div>
+                <div class="form-group"><label>كلمة المرور</label><input type="password" id="newPass"></div>
                 <div class="form-group"><label>الصلاحية</label><select id="newRole"><option value="كاشير">كاشير</option><option value="مخزن">مخزن</option><option value="مدير">مدير</option></select></div>
-                <button id="addNewUserBtn" class="submit-btn"><i class="fas fa-plus"></i> إضافة مستخدم</button>
+                <button id="addUserBtn" class="submit-btn">إضافة</button>
             </div>
         `;
         document.getElementById('dynamicView').innerHTML = html;
         
-        const tbody = document.getElementById('usersTableBody');
-        tbody.innerHTML = '';
-        users.forEach((user) => {
-            let row = tbody.insertRow();
-            row.innerHTML = `<td>${user.username}数量<td style="padding:8px">${user.role}数量<td style="padding:8px">${user.lastLogin || 'لم يسجل بعد'}数量
-                <td><button class="btn-small" onclick="editUser('${user.username}')"><i class="fas fa-edit"></i> تعديل</button>
-                ${user.username !== 'admin' ? `<button class="btn-small btn-danger" onclick="deleteUser('${user.username}')"><i class="fas fa-trash"></i> حذف</button>` : '<span style="color:#999">لا يمكن حذف المدير</span>'}数量
-            `;
+        let container = document.getElementById('usersContainer');
+        container.innerHTML = '';
+        users.forEach(u => {
+            let card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;"><div><strong>${u.username}</strong> (${u.role})<br><small>آخر دخول: ${u.lastLogin || 'لم يسجل'}</small></div><div><button class="btn-small" onclick="editUser('${u.username}')">تعديل</button>${u.username !== 'admin' ? `<button class="btn-small btn-danger" onclick="deleteUser('${u.username}')">حذف</button>` : '<span style="color:#999;">لا يمكن حذف المدير</span>'}</div></div>`;
+            container.appendChild(card);
         });
         
-        document.getElementById('addNewUserBtn').onclick = () => {
-            verifyAdmin((isAdmin) => {
+        document.getElementById('addUserBtn').onclick = () => {
+            verifyAdmin(isAdmin => {
                 if (isAdmin) {
-                    const username = document.getElementById('newUsername').value.trim();
-                    const password = document.getElementById('newPassword').value;
-                    const role = document.getElementById('newRole').value;
-                    if (!username || !password) { alert("الرجاء إدخال اسم المستخدم وكلمة المرور"); return; }
-                    if (users.find(u => u.username === username)) { alert("اسم المستخدم موجود بالفعل!"); return; }
+                    let username = document.getElementById('newUser').value.trim();
+                    let password = document.getElementById('newPass').value;
+                    let role = document.getElementById('newRole').value;
+                    if (!username || !password) { alert("املأ الحقول"); return; }
+                    if (users.find(u => u.username === username)) { alert("اسم المستخدم موجود"); return; }
                     users.push({ username, password, role, lastLogin: null });
                     saveAllData();
                     renderUserManagement();
-                    logActivity(`إضافة مستخدم جديد: ${username} (${role})`);
-                    alert(`✅ تم إضافة المستخدم ${username} بنجاح`);
-                    document.getElementById('newUsername').value = '';
-                    document.getElementById('newPassword').value = '';
+                    logActivity(`إضافة مستخدم: ${username}`);
+                    alert(`✅ تم إضافة ${username}`);
+                    document.getElementById('newUser').value = '';
+                    document.getElementById('newPass').value = '';
                 }
             });
         };
     }
     
     window.editUser = (username) => {
-        verifyAdmin((isAdmin) => {
+        verifyAdmin(isAdmin => {
             if (isAdmin) {
-                const user = users.find(u => u.username === username);
-                if (!user) return;
-                const newUsername = prompt("اسم المستخدم الجديد:", user.username);
+                let user = users.find(u => u.username === username);
+                let newUsername = prompt("الاسم الجديد", user.username);
                 if (newUsername && newUsername !== user.username) {
-                    if (users.find(u => u.username === newUsername)) { alert("اسم المستخدم موجود بالفعل!"); return; }
+                    if (users.find(u => u.username === newUsername)) { alert("الاسم موجود"); return; }
                     user.username = newUsername;
                 }
-                const newPassword = prompt("كلمة المرور الجديدة (اترك فارغاً إذا لا تريد التغيير):", "");
-                if (newPassword && newPassword.trim() !== "") { user.password = newPassword; }
-                const newRole = prompt("الصلاحية الجديدة (مدير / كاشير / مخزن):", user.role);
-                if (newRole && ["مدير", "كاشير", "مخزن"].includes(newRole)) { user.role = newRole; }
+                let newPass = prompt("كلمة المرور الجديدة (اترك فارغاً)", "");
+                if (newPass && newPass.trim()) user.password = newPass;
+                let newRole = prompt("الصلاحية الجديدة (مدير/كاشير/مخزن)", user.role);
+                if (newRole && ["مدير", "كاشير", "مخزن"].includes(newRole)) user.role = newRole;
                 saveAllData();
                 renderUserManagement();
-                logActivity(`تعديل بيانات المستخدم: ${username}`);
-                alert(`✅ تم تعديل بيانات المستخدم بنجاح`);
+                logActivity(`تعديل مستخدم: ${username}`);
+                alert("✅ تم التعديل");
             }
         });
     };
-    
     window.deleteUser = (username) => {
-        if (username === 'admin') { alert("لا يمكن حذف المستخدم المدير الرئيسي!"); return; }
-        verifyAdmin((isAdmin) => {
-            if (isAdmin) {
-                if (confirm(`⚠️ هل أنت متأكد من حذف المستخدم "${username}"؟`)) {
-                    users = users.filter(u => u.username !== username);
-                    saveAllData();
-                    renderUserManagement();
-                    logActivity(`حذف مستخدم: ${username}`);
-                    alert(`✅ تم حذف المستخدم ${username} بنجاح`);
-                }
+        if (username === 'admin') { alert("لا يمكن حذف المدير"); return; }
+        verifyAdmin(isAdmin => {
+            if (isAdmin && confirm(`حذف المستخدم ${username}؟`)) {
+                users = users.filter(u => u.username !== username);
+                saveAllData();
+                renderUserManagement();
+                logActivity(`حذف مستخدم: ${username}`);
+                alert("✅ تم الحذف");
             }
         });
     };
 
-    // ------------------------- تهيئة الأحداث -------------------------
+    // ------------------------- تهيئة -------------------------
     function initEventListeners() {
-        document.getElementById('doLoginBtn').onclick = () => {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            login(username, password);
-        };
-        document.getElementById('loginUsername').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('doLoginBtn').click(); });
-        document.getElementById('loginPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('doLoginBtn').click(); });
+        document.getElementById('doLoginBtn').onclick = () => login(document.getElementById('loginUsername').value, document.getElementById('loginPassword').value);
+        document.getElementById('loginUsername').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('doLoginBtn').click(); });
+        document.getElementById('loginPassword').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('doLoginBtn').click(); });
         document.getElementById('logoutBtn').onclick = () => logout();
         document.getElementById('confirmYesBtn').onclick = () => checkAdminCredentials();
         document.getElementById('confirmNoBtn').onclick = () => closeModal();
-        document.getElementById('changeMyPasswordBtn').onclick = () => { document.getElementById('changePasswordModal').style.display = 'flex'; };
-        document.getElementById('confirmChangePassBtn').onclick = () => {
-            const oldPass = document.getElementById('oldPassword').value;
-            const newPass = document.getElementById('newPassword1').value;
-            const confirmPass = document.getElementById('newPassword2').value;
-            changeMyPassword(oldPass, newPass, confirmPass);
-        };
+        document.getElementById('changeMyPasswordBtn').onclick = () => document.getElementById('changePasswordModal').style.display = 'flex';
+        document.getElementById('confirmChangePassBtn').onclick = () => changeMyPassword(document.getElementById('oldPassword').value, document.getElementById('newPassword1').value, document.getElementById('newPassword2').value);
         document.getElementById('cancelChangePassBtn').onclick = () => closeChangePasswordModal();
         window.onclick = (event) => { if (event.target === document.getElementById('repairEditModal')) closeRepairEditModal(); };
     }
@@ -1584,14 +1327,13 @@
         const user = users.find(u => u.username === sessionData.userId);
         if (user) {
             currentUser = user;
-            currentSessionId = sessionData.sessionId;
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('currentUserDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${user.username} (${user.role})`;
-            if (user.lastLogin) { document.getElementById('lastLoginDisplay').innerHTML = `🕒 آخر دخول: ${user.lastLogin}`; }
+            if (user.lastLogin) document.getElementById('lastLoginDisplay').innerHTML = `🕒 آخر دخول: ${user.lastLogin}`;
             renderSidebar();
             loadSection('products');
-        } else { sessionStorage.removeItem('currentSession'); }
+        } else sessionStorage.removeItem('currentSession');
     }
 </script>
 </body>
